@@ -3,9 +3,8 @@ import cats.Applicative
 
 object Demo extends App {
 
-  final case class NormalClass(name: String, age: Int)
-
-  final case class User(name: String, age: Int = 42)(val s: String)
+  final case class User(name: String, age: Int)
+  final case class MultiParameterList(name: String, age: Int)(val s: String)
 
   final case class Person(name: String) {
     override def toString: String = "***"
@@ -17,8 +16,8 @@ object Demo extends App {
 
   final case class ShouldHaveNormalToString(x: String)
 
-  println(NormalClass("JP2", 2137))
-  println(User("foo")("oops").toString)
+  println(User("Joe", 23).toString)
+  println(MultiParameterList("foo", 20)("s"))
   println(Person("boo").toString)
   println(new HasOtherConstructors(0))
   println(ShouldHaveNormalToString("a"))
