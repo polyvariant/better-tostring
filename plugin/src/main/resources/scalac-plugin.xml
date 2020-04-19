@@ -1,0 +1,4 @@
+<plugin>
+ <name>better-tostring</name>
+ <classname>com.kubukoz.ScalaCompilerPlugin</classname>
+</plugin>
