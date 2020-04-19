@@ -82,7 +82,7 @@ class BetterToStringPluginComponent(val global: Global) extends PluginComponent 
   override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
 
     override def apply(unit: CompilationUnit): Unit = {
-      val trans = new TypingTransformer(unit) {
+      val trans = new Transformer {
         override def transform(tree: Tree): Tree = modifyClasses(transformClass)(tree)
       }
 

@@ -16,12 +16,24 @@ object Demo extends App {
 
   final case class ShouldHaveNormalToString(x: String)
 
+  final case class NestedParent() {
+    final case class NestedChild(name: String)
+  }
+
+  def fun() = {
+    final case class LocalClass(name: String)
+
+    LocalClass("a").toString()
+  }
+
   println(User("Joe", 23).toString)
   println(MultiParameterList("foo", 20)("s"))
   println(Person("boo").toString)
   println(new HasOtherConstructors(0))
   println(ShouldHaveNormalToString("a"))
   println(Foo[cats.Id].foo)
+  println(NestedParent().NestedChild("a"))
+  println(fun())
 }
 
 @finalAlg
