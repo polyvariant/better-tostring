@@ -30,7 +30,7 @@ User("Joe", 18).toString() // "User(name = Joe, age = 18)"
 In sbt:
 
 ```scala
-libraryDependencies += "com.kubukoz" % "better-tostring" % version cross CrossVersion.full
+libraryDependencies += compilerPlugin("com.kubukoz" % "better-tostring" % version cross CrossVersion.full)
 ```
 
 The plugin is currently published for Scala 2.12.10, 2.12.11, and 2.13.1.
