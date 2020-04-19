@@ -14,8 +14,6 @@ object Demo extends App {
     def this(a: Int) = this("42")
   }
 
-  final case class ShouldHaveNormalToString(x: String)
-
   final case class NestedParent() {
     final case class NestedChild(name: String)
   }
@@ -30,7 +28,6 @@ object Demo extends App {
   println(MultiParameterList("foo", 20)("s"))
   println(Person("boo").toString)
   println(new HasOtherConstructors(0))
-  println(ShouldHaveNormalToString("a"))
   println(Foo[cats.Id].foo)
   println(NestedParent().NestedChild("a"))
   println(fun())
