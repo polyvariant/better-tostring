@@ -1,6 +1,9 @@
-# better-toString
+# better-tostring
 
 [![License](http://img.shields.io/:license-Apache%202-green.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Build Status](https://travis-ci.com/kubukoz/better-tostring.svg?branch=master)](https://travis-ci.com/kubukoz/better-tostring)
+[![Latest version](https://index.scala-lang.org/kubukoz/better-tostring/better-tostring/latest.svg)](https://index.scala-lang.org/kubukoz/better-tostring/better-tostring)
+[![Maven Central](https://img.shields.io/maven-central/v/com.kubukoz/better-tostring_2.13.1.svg)](http://search.maven.org/#search%7Cga%7C1%7Cbetter-tostring)
 
 A Scala compiler plugin that replaces the default `toString` implementation of case classes with a more verbose one.
 
