@@ -3,7 +3,6 @@ package com.kubukoz
 import scala.tools.nsc.plugins.{Plugin, PluginComponent}
 import scala.tools.nsc.{Global, Phase}
 import scala.tools.nsc.transform.TypingTransformers
-import scala.reflect.internal.FlagSets
 import scala.reflect.internal.Flags
 
 class ScalaCompilerPlugin(override val global: Global) extends Plugin {
@@ -29,7 +28,7 @@ class ScalaCompilerPluginComponent(val global: Global) extends PluginComponent w
           val toStringImpl: Tree = {
             val className = clazz.name.toString()
 
-            val paramList = params.zipWithIndex.flatMap[Tree] {
+            val paramListParts: List[Tree] = params.zipWithIndex.flatMap {
               case (v, index) =>
                 val commaPrefix = if (index > 0) ", " else ""
 
@@ -42,7 +41,7 @@ class ScalaCompilerPluginComponent(val global: Global) extends PluginComponent w
             val parts =
               List(
                 List(Literal(Constant(className ++ "("))),
-                paramList,
+                paramListParts,
                 List(Literal(Constant(")")))
               ).flatten
 

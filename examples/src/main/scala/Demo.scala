@@ -12,8 +12,11 @@ object Demo extends App {
     def this(a: Int) = this("42")
   }
 
+  final case class ShouldHaveNormalToString(x: String)
+
   println(NormalClass("JP2", 2137))
   println(User("foo")("oops").toString)
   println(Person("boo").toString)
   println(new HasOtherConstructors(0))
+  println(ShouldHaveNormalToString("a"))
 }
