@@ -1,3 +1,6 @@
+import cats.tagless.finalAlg
+import cats.Applicative
+
 object Demo extends App {
 
   final case class NormalClass(name: String, age: Int)
@@ -19,4 +22,17 @@ object Demo extends App {
   println(Person("boo").toString)
   println(new HasOtherConstructors(0))
   println(ShouldHaveNormalToString("a"))
+  println(Foo[cats.Id].foo)
+}
+
+@finalAlg
+trait Foo[F[_]] {
+  def foo: F[Unit]
+}
+
+object Foo {
+
+  implicit def applicativeFoo[F[_]: Applicative]: Foo[F] = new Foo[F] {
+    def foo: F[Unit] = Applicative[F].unit
+  }
 }

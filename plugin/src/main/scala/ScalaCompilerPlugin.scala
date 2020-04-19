@@ -7,7 +7,7 @@ import scala.reflect.internal.Flags
 
 class ScalaCompilerPlugin(override val global: Global) extends Plugin {
   override val name: String = "better-tostring"
-  override val description: String = "scala compiler plugin simple example"
+  override val description: String = "scala compiler plugin for better default toString implementations"
   override val components: List[PluginComponent] = List(new ScalaCompilerPluginComponent(global))
 }
 
@@ -57,7 +57,10 @@ class ScalaCompilerPluginComponent(val global: Global) extends PluginComponent w
             toStringImpl
           )
 
-          clazz.copy(impl = clazz.impl.copy(body = clazz.impl.body :+ methodBody))
+          val newClass = clazz.copy(impl = clazz.impl.copy(body = clazz.impl.body :+ methodBody))
+
+          println(clazz.name.toString())
+          newClass
         }
         private def transformClass(clazz: ClassDef): ClassDef = {
           val hasCustomToString: Boolean = clazz.impl.body.exists {
@@ -75,10 +78,11 @@ class ScalaCompilerPluginComponent(val global: Global) extends PluginComponent w
         }
 
         private def modifyClasses(f: ClassDef => ClassDef)(tree: Tree): Tree = tree match {
-          case p: PackageDef   => p.copy(stats = p.stats.map(modifyClasses(f)))
-          case m: ModuleDef    => m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(f))))
-          case clazz: ClassDef => f(clazz)
-          case other           => other
+          case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(f)))
+          case m: ModuleDef  => m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(f))))
+          //Only case classes
+          case clazz: ClassDef if clazz.mods.hasFlag(Flags.CASE) => f(clazz)
+          case other                                             => other
         }
 
         override def transform(tree: Tree): Tree = modifyClasses(transformClass)(tree)

@@ -23,9 +23,9 @@ val compilerPlugins = List(
 )
 
 val commonSettings = Seq(
-  scalaVersion := "2.13.1",
+  scalaVersion := "2.12.10",
   crossScalaVersions := Seq("2.12.10", "2.12.11", "2.13.1"),
-  scalacOptions --= Seq("-Xfatal-warnings")
+  scalacOptions -= "-Xfatal-warnings"
 )
 
 val plugin = project.settings(
@@ -39,9 +39,22 @@ val plugin = project.settings(
   ) ++ compilerPlugins
 )
 
+def macroAnnotationsFlags(scalaVersion: String) =
+  if (scalaVersion.startsWith("2.13")) Seq("-Ymacro-annotations") else Seq()
+
+def paradise(scalaVersion: String) =
+  if (scalaVersion.startsWith("2.13"))
+    Seq()
+  else Seq(compilerPlugin(("org.scalamacros" % "paradise" % "2.1.1").cross(CrossVersion.full)))
+
 val examples = project.settings(
   skip in publish := true,
   commonSettings,
+  scalacOptions ++= macroAnnotationsFlags(scalaVersion.value),
+  libraryDependencies ++= paradise(scalaVersion.value),
+  libraryDependencies ++= Seq(
+    "org.typelevel" %% "cats-tagless-macros" % "0.11"
+  ),
   scalacOptions ++= {
     val jar = (plugin / Compile / packageBin).value
     Seq(
