@@ -34,7 +34,7 @@ The plugin is currently published for Scala 2.12.10, 2.12.11, and 2.13.1.
 
 ## What does the plugin actually do?
 
-1. Only case classes are changed.
+1. Only case classes located directly in `package`s or `object`s are changed. Nested classes and classes local to functions are currently ignored.
 2. Only the fields in the first parameter list are shown.
 3. If the class already overrides `toString` *directly*, it's not replaced.
 

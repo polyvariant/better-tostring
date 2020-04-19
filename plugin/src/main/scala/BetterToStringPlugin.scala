@@ -5,13 +5,13 @@ import scala.tools.nsc.{Global, Phase}
 import scala.tools.nsc.transform.TypingTransformers
 import scala.reflect.internal.Flags
 
-class ScalaCompilerPlugin(override val global: Global) extends Plugin {
+class BetterToStringPlugin(override val global: Global) extends Plugin {
   override val name: String = "better-tostring"
   override val description: String = "scala compiler plugin for better default toString implementations"
-  override val components: List[PluginComponent] = List(new ScalaCompilerPluginComponent(global))
+  override val components: List[PluginComponent] = List(new BetterToStringPluginComponent(global))
 }
 
-class ScalaCompilerPluginComponent(val global: Global) extends PluginComponent with TypingTransformers {
+class BetterToStringPluginComponent(val global: Global) extends PluginComponent with TypingTransformers {
   import global._
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: List[String] = List("parser")
