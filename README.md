@@ -46,5 +46,6 @@ The plugin is currently published for Scala 2.12.10, 2.12.11, and 2.13.1.
 - Ignore classes that inherit `toString` from a type that isn't `Object`
 - Add a way of overriding default behavior (blacklisting/whitelisting certain classes) - probably via an annotation in an extra dependency
 - Extend functionality to support ADTs - for example, `case object B extends A` inside `object A` could be shown as `A.B`
+- Potentially ignore value classes
 
 If you have ideas for improving the plugin, feel free to create an issue and I'll consider making it happen :)
