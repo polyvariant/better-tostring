@@ -7,8 +7,6 @@
 
 A Scala compiler plugin that replaces the default `toString` implementation of case classes with a more verbose one.
 
-## ⚠️  Warning - experimental library. Hasn't been used in production yet
-
 ## Example
 
 Without the plugin:
