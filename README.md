@@ -31,7 +31,7 @@ In sbt:
 libraryDependencies += compilerPlugin("com.kubukoz" % "better-tostring" % version cross CrossVersion.full)
 ```
 
-The plugin is currently published for Scala 2.12.10, 2.12.11, and 2.13.1.
+The plugin is currently published for Scala 2.12.10, 2.12.11, 2.13.1 and 2.13.2.
 
 ## What does the plugin actually do?
 
