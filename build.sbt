@@ -18,13 +18,13 @@ def crossPlugin(x: sbt.librarymanagement.ModuleID) = compilerPlugin(x.cross(Cros
 
 val compilerPlugins = List(
   crossPlugin("org.typelevel" % "kind-projector" % "0.11.0"),
-  // crossPlugin("com.github.cb372" % "scala-typed-holes" % "0.1.2"),
+  crossPlugin("com.github.cb372" % "scala-typed-holes" % "0.1.4"),
   compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 )
 
 val commonSettings = Seq(
   scalaVersion := "2.12.10",
-  crossScalaVersions := Seq("2.12.10", "2.12.11", "2.13.1", "2.13.2"),
+  crossScalaVersions := Seq("2.12.10", "2.12.11", "2.13.1", "2.13.2", "2.13.3"),
   scalacOptions -= "-Xfatal-warnings"
 )
 
