@@ -17,14 +17,23 @@ inThisBuild(
 def crossPlugin(x: sbt.librarymanagement.ModuleID) = compilerPlugin(x.cross(CrossVersion.full))
 
 val compilerPlugins = List(
-  crossPlugin("org.typelevel" % "kind-projector" % "0.11.0"),
-  crossPlugin("com.github.cb372" % "scala-typed-holes" % "0.1.5"),
+  crossPlugin("org.typelevel" % "kind-projector" % "0.11.1"),
+  crossPlugin("com.github.cb372" % "scala-typed-holes" % "0.1.6"),
   compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 )
 
 val commonSettings = Seq(
   scalaVersion := "2.12.10",
-  crossScalaVersions := Seq("2.12.10", "2.12.11", "2.12.12", "2.13.1", "2.13.2", "2.13.3"),
+  crossScalaVersions := Seq(
+    "2.12.10",
+    "2.12.11",
+    "2.12.12",
+    //
+    "2.13.1",
+    "2.13.2",
+    "2.13.3",
+    "2.13.4"
+  ),
   scalacOptions -= "-Xfatal-warnings"
 )
 
@@ -66,9 +75,4 @@ val examples = project.settings(
 )
 
 val betterToString =
-  project
-    .in(file("."))
-    .settings(name := "root")
-    .settings(commonSettings, skip in publish := true)
-    .dependsOn(plugin)
-    .aggregate(plugin)
+  project.in(file(".")).settings(name := "root").settings(commonSettings, skip in publish := true).dependsOn(plugin).aggregate(plugin)
