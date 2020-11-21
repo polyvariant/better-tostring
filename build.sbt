@@ -17,34 +17,34 @@ inThisBuild(
 def crossPlugin(x: sbt.librarymanagement.ModuleID) = compilerPlugin(x.cross(CrossVersion.full))
 
 val compilerPlugins = List(
-  crossPlugin("org.typelevel" % "kind-projector" % "0.11.1"),
-  crossPlugin("com.github.cb372" % "scala-typed-holes" % "0.1.6"),
-  compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
+//  crossPlugin("org.typelevel" % "kind-projector" % "0.11.1"),
+//  crossPlugin("com.github.cb372" % "scala-typed-holes" % "0.1.6"),
+//  compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
 )
 
 val commonSettings = Seq(
-  scalaVersion := "2.12.10",
-  crossScalaVersions := Seq(
-    "2.12.10",
-    "2.12.11",
-    "2.12.12",
-    //
-    "2.13.1",
-    "2.13.2",
-    "2.13.3",
-    "2.13.4"
-  ),
-  scalacOptions -= "-Xfatal-warnings"
+  scalaVersion := "3.0.0-M1"
+//  crossScalaVersions := Seq(
+//    "2.12.10",
+//    "2.12.11",
+//    "2.12.12",
+
+//    "2.13.1",
+//    "2.13.2",
+//    "2.13.3",
+//    "2.13.4"
+//  ),
+//  scalacOptions -= "-Xfatal-warnings"
 )
 
 val plugin = project.settings(
   name := "better-tostring",
   commonSettings,
-  crossTarget := target.value / s"scala-${scalaVersion.value}", // workaround for https://github.com/sbt/sbt/issues/5097
-  crossVersion := CrossVersion.full,
+//  crossTarget := target.value / s"scala-${scalaVersion.value}", // workaround for https://github.com/sbt/sbt/issues/5097
+//  crossVersion := CrossVersion.full,
   libraryDependencies ++= Seq(
-    scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-    "org.scalatest" %% "scalatest" % "3.1.0" % Test
+    "org.scala-lang" % "scala3-compiler_3.0.0-M1" % "3.0.0-M1"
+//    "org.scalatest" %% "scalatest" % "3.1.0" % Test
   ) ++ compilerPlugins
 )
 
@@ -59,17 +59,17 @@ def paradise(scalaVersion: String) =
 val examples = project.settings(
   skip in publish := true,
   commonSettings,
-  scalacOptions ++= macroAnnotationsFlags(scalaVersion.value),
-  libraryDependencies ++= paradise(scalaVersion.value),
+//  scalacOptions ++= macroAnnotationsFlags(scalaVersion.value),
+//  libraryDependencies ++= paradise(scalaVersion.value),
   libraryDependencies ++= Seq(
-    "org.typelevel" %% "cats-tagless-macros" % "0.11"
+//    "org.typelevel" % "cats-tagless-macros_2.13" % "0.11"
   ),
   scalacOptions ++= {
     val jar = (plugin / Compile / packageBin).value
     Seq(
       s"-Xplugin:${jar.getAbsolutePath}",
-      s"-Xplugin-require:better-tostring",
-      s"-Jdummy=${jar.lastModified}"
+//      s"-Xplugin-require:better-tostring",
+//      s"-Jdummy=${jar.lastModified}"
     ) //borrowed from bm4
   }
 )

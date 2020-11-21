@@ -1,92 +1,67 @@
 package com.kubukoz
 
-import scala.tools.nsc.plugins.{Plugin, PluginComponent}
-import scala.tools.nsc.{Global, Phase}
-import scala.tools.nsc.transform.TypingTransformers
-import scala.reflect.internal.Flags
+import dotty.tools.dotc.ast.tpd
+import dotty.tools.dotc.core.Contexts.Context
+import dotty.tools.dotc.core.Symbols
+import dotty.tools.dotc.core.Flags._
+import dotty.tools.dotc.core.Constants.Constant
+import dotty.tools.dotc.core.Symbols.Symbol
+import dotty.tools.dotc.plugins.{PluginPhase, StandardPlugin}
+import dotty.tools.dotc.typer.FrontEnd
+import dotty.tools.dotc.transform.PostTyper
+import dotty.tools.dotc.core.Decorators._
 
-class BetterToStringPlugin(override val global: Global) extends Plugin {
+class BetterToStringPlugin extends StandardPlugin:
   override val name: String = "better-tostring"
   override val description: String = "scala compiler plugin for better default toString implementations"
-  override val components: List[PluginComponent] = List(new BetterToStringPluginComponent(global))
-}
+  override def init(options: List[String]): List[PluginPhase] = List(new BetterToStringPluginPhase)
 
-class BetterToStringPluginComponent(val global: Global) extends PluginComponent with TypingTransformers {
-  import global._
+class BetterToStringPluginPhase extends PluginPhase:
+  import tpd._
+  
   override val phaseName: String = "better-tostring-phase"
-  override val runsAfter: List[String] = List("parser")
+  override val runsAfter: Set[String] = Set(FrontEnd.name)
+  
+  val eprintln = System.err.println(_: Any)
+  
+  override def transformTemplate(t: Template)(using ctx: Context): Tree = 
+    val clazz = ctx.owner.asClass
+    if !clazz.flags.is(CaseClass) then return t
+    
+    for m <- t.body do
+      m match 
+        case d: DefDef if d.name.toString == "toString" => return t
+        case _ =>
+    
+    val sym = Symbols.defn.Any_toString
+      
+    // this was adapted from dotty.tools.dotc.transform.SyntheticMembers (line 115)
+    val toStringSymbol = sym.copy(
+      owner = clazz,
+      flags = sym.flags | Override,
+      info = clazz.thisType.memberInfo(sym),
+      coord = clazz.coord
+    ).entered.asTerm 
+    // I think it should actually be enteredAfter, but this is simpler and it seems to work (PluginPhase is not a DenotTransformer)
+    
+    def str = (s: String) => Literal(Constant(s))
+    // can't be an extension block, because overloading methods doesn't work if the block is inside a method O_o 
+    implicit class TreeExtensions(self: Tree):
+      def concat(other: Tree) = self.select("+".toTermName).appliedTo(other)
+      def concat(s: String) = self.select("+".toTermName).appliedTo(str(s))
+      def concat(sym: Symbol) = self.select("+".toTermName).appliedTo(This(clazz).select(sym))
 
-  private def addToString(clazz: ClassDef): ClassDef = {
-    val params = clazz.impl.body.collect {
-      case v: ValDef if v.mods.hasFlag(Flags.CASEACCESSOR) => v
-    }
+    val vals = t.body.collect { case v: ValDef if v.mods.is(CaseAccessor) => v }
 
-    val toStringImpl: Tree = {
-      val className = clazz.name.toString()
-
-      val paramListParts: List[Tree] = params.zipWithIndex.flatMap {
-        case (v, index) =>
-          val commaPrefix = if (index > 0) ", " else ""
-
-          List(
-            Literal(Constant(commaPrefix ++ v.name.toString ++ " = ")),
-            q"this.${v.name}"
-          )
-      }
-
-      val parts =
-        List(
-          List(Literal(Constant(className ++ "("))),
-          paramListParts,
-          List(Literal(Constant(")")))
-        ).flatten
-
-      parts.reduceLeft((a, b) => q"$a + $b")
-    }
-
-    val methodBody = DefDef(
-      Modifiers(Flags.OVERRIDE),
-      TermName("toString"),
-      Nil,
-      List(List()),
-      Ident(TypeName("String")),
-      toStringImpl
-    )
-
-    clazz.copy(impl = clazz.impl.copy(body = clazz.impl.body :+ methodBody))
-  }
-
-  private def transformClass(clazz: ClassDef): ClassDef = {
-    val hasCustomToString: Boolean = clazz.impl.body.exists {
-
-      case fun: DefDef =>
-        //so meta
-        fun.name.toString == "toString"
-      case _ => false
-    }
-
-    val shouldModify = !hasCustomToString
-
-    if (shouldModify) addToString(clazz)
-    else clazz
-  }
-
-  private def modifyClasses(f: ClassDef => ClassDef)(tree: Tree): Tree = tree match {
-    case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(f)))
-    case m: ModuleDef  => m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(f))))
-    //Only case classes
-    case clazz: ClassDef if clazz.mods.hasFlag(Flags.CASE) => f(clazz)
-    case other                                             => other
-  }
-
-  override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
-
-    override def apply(unit: CompilationUnit): Unit = {
-      val trans = new Transformer {
-        override def transform(tree: Tree): Tree = modifyClasses(transformClass)(tree)
-      }
-
-      trans.transformUnit(unit)
-    }
-  }
-}
+    var body: Tree = str(clazz.name.toString + "(")
+    for (v, i) <- vals.zipWithIndex do
+      if i > 0 then body = body.concat(", ")
+      body = body.concat(v.symbol.name.toString + " = ")
+      body = body.concat(v.symbol)
+    body = body.concat(")")
+    
+    val toStringDef = DefDef(toStringSymbol, body)
+    
+    eprintln(toStringDef.show)
+    
+    cpy.Template(t)(body = toStringDef :: t.body)

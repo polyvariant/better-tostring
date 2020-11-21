@@ -1,9 +1,6 @@
-import cats.tagless.finalAlg
-import cats.Applicative
-
 object Demo extends App {
 
-  final case class User(name: String, age: Int)
+  final case class User(name: String, var age: Int)
   final case class MultiParameterList(name: String, age: Int)(val s: String)
 
   final case class Person(name: String) {
@@ -23,24 +20,17 @@ object Demo extends App {
 
     LocalClass("a").toString()
   }
+  
+  enum Tree[T] {
+    case Node(l: Tree[T], r: Tree[T])
+    case Leaf(v: T)
+  }
 
   println(User("Joe", 23).toString)
   println(MultiParameterList("foo", 20)("s"))
   println(Person("boo").toString)
   println(new HasOtherConstructors(0))
-  println(Foo[cats.Id].foo)
   println(NestedParent().NestedChild("a"))
   println(fun())
-}
-
-@finalAlg
-trait Foo[F[_]] {
-  def foo: F[Unit]
-}
-
-object Foo {
-
-  implicit def applicativeFoo[F[_]: Applicative]: Foo[F] = new Foo[F] {
-    def foo: F[Unit] = Applicative[F].unit
-  }
+  println(Tree.Node(Tree.Leaf(69), Tree.Node(Tree.Leaf(4), Tree.Leaf(2))))
 }
