@@ -37,7 +37,7 @@ val plugin = project.settings(
   crossVersion := CrossVersion.full,
   libraryDependencies ++= Seq(
     scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-    "org.scalatest" %% "scalatest" % "3.1.4" % Test
+    "org.scalatest" %% "scalatest" % "3.2.3" % Test
   )
 )
 
