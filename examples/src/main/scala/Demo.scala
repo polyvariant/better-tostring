@@ -1,4 +1,3 @@
-import cats.tagless.finalAlg
 import cats.Applicative
 
 object Demo extends App {
@@ -33,12 +32,13 @@ object Demo extends App {
   println(fun())
 }
 
-@finalAlg
 trait Foo[F[_]] {
   def foo: F[Unit]
 }
 
 object Foo {
+
+  def apply[F[_]](implicit F: Foo[F]): Foo[F] = F
 
   implicit def applicativeFoo[F[_]: Applicative]: Foo[F] = new Foo[F] {
     def foo: F[Unit] = Applicative[F].unit

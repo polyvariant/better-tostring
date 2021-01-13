@@ -14,20 +14,13 @@ inThisBuild(
   )
 )
 
-def crossPlugin(x: sbt.librarymanagement.ModuleID) = compilerPlugin(x.cross(CrossVersion.full))
-
-val compilerPlugins = List(
-  crossPlugin("org.typelevel" % "kind-projector" % "0.11.1"),
-  crossPlugin("com.github.cb372" % "scala-typed-holes" % "0.1.6"),
-  compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
-)
-
 val commonSettings = Seq(
   scalaVersion := "2.12.10",
   crossScalaVersions := Seq(
     "2.12.10",
     "2.12.11",
     "2.12.12",
+    "2.12.13",
     //
     "2.13.1",
     "2.13.2",
@@ -45,25 +38,12 @@ val plugin = project.settings(
   libraryDependencies ++= Seq(
     scalaOrganization.value % "scala-compiler" % scalaVersion.value,
     "org.scalatest" %% "scalatest" % "3.1.0" % Test
-  ) ++ compilerPlugins
+  )
 )
-
-def macroAnnotationsFlags(scalaVersion: String) =
-  if (scalaVersion.startsWith("2.13")) Seq("-Ymacro-annotations") else Seq()
-
-def paradise(scalaVersion: String) =
-  if (scalaVersion.startsWith("2.13"))
-    Seq()
-  else Seq(compilerPlugin(("org.scalamacros" % "paradise" % "2.1.1").cross(CrossVersion.full)))
 
 val examples = project.settings(
   skip in publish := true,
   commonSettings,
-  scalacOptions ++= macroAnnotationsFlags(scalaVersion.value),
-  libraryDependencies ++= paradise(scalaVersion.value),
-  libraryDependencies ++= Seq(
-    "org.typelevel" %% "cats-tagless-macros" % "0.11"
-  ),
   scalacOptions ++= {
     val jar = (plugin / Compile / packageBin).value
     Seq(
