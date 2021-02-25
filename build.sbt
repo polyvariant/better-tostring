@@ -25,7 +25,8 @@ val commonSettings = Seq(
     "2.13.1",
     "2.13.2",
     "2.13.3",
-    "2.13.4"
+    "2.13.4",
+    "2.13.5",
   ),
   scalacOptions -= "-Xfatal-warnings"
 )
