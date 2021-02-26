@@ -15,7 +15,7 @@ inThisBuild(
 )
 
 val commonSettings = Seq(
-  scalaVersion := "2.12.10",
+  scalaVersion := "2.12.13",
   crossScalaVersions := Seq(
     "2.12.10",
     "2.12.11",
