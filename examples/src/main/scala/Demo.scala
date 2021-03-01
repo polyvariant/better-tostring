@@ -14,7 +14,7 @@ object Demo extends App {
   }
 
   final case class NestedParent() {
-    final case class NestedChild(name: String)
+    case class NestedChild(name: String)
   }
 
   def fun() = {

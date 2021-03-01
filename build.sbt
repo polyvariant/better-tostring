@@ -78,7 +78,10 @@ val examples = project.settings(
       s"-Xplugin-require:better-tostring",
       s"-Jdummy=${jar.lastModified}"
     ) //borrowed from bm4
-  }
+  },
+  libraryDependencies ++= Seq(
+    "org.typelevel" %% "cats-core" % "2.4.2"
+  )
 )
 
 val betterToString =
