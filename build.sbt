@@ -86,5 +86,4 @@ val betterToString =
     .in(file("."))
     .settings(name := "root")
     .settings(commonSettings, skip in publish := true)
-    .dependsOn(plugin)
-    .aggregate(plugin)
+    .aggregate(plugin, examples)
