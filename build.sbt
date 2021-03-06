@@ -63,12 +63,11 @@ val plugin = project.settings(
   crossTarget := target.value / s"scala-${scalaVersion.value}", // workaround for https://github.com/sbt/sbt/issues/5097
   crossVersion := CrossVersion.full,
   libraryDependencies ++= Seq(
-    scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-    "org.scalatest" %% "scalatest" % "3.2.5" % Test
+    scalaOrganization.value % "scala-compiler" % scalaVersion.value
   )
 )
 
-val examples = project.settings(
+val tests = project.settings(
   skip in publish := true,
   commonSettings,
   scalacOptions ++= {
@@ -80,7 +79,7 @@ val examples = project.settings(
     ) //borrowed from bm4
   },
   libraryDependencies ++= Seq(
-    "org.typelevel" %% "cats-core" % "2.4.2"
+    "org.scalatest" %% "scalatest" % "3.2.5" % Test
   )
 )
 
@@ -89,4 +88,4 @@ val betterToString =
     .in(file("."))
     .settings(name := "root")
     .settings(commonSettings, skip in publish := true)
-    .aggregate(plugin, examples)
+    .aggregate(plugin, tests)
