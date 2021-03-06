@@ -7,6 +7,7 @@ trait CompilerApi {
   type Clazz
   type Param
   type ParamName
+  type Method
 
   def className(clazz: Clazz): String
   def params(clazz: Clazz): List[Param]
@@ -15,11 +16,14 @@ trait CompilerApi {
   def paramName(param: Param): ParamName
   def selectInThis(clazz: Clazz, name: ParamName): Tree
   def concat(l: Tree, r: Tree): Tree
+
+  def createToString(clazz: Clazz, body: Tree): Method
+  def addMethod(clazz: Clazz, method: Method): Clazz
 }
 
 trait BetterToStringImpl[+C <: CompilerApi] {
   val compilerApi: C
-  def toStringImpl(clazz: compilerApi.Clazz): compilerApi.Tree
+  def overrideToString(clazz: compilerApi.Clazz): compilerApi.Clazz
 }
 object BetterToStringImpl {
   def instance(
@@ -30,7 +34,10 @@ object BetterToStringImpl {
 
       import api._
 
-      def toStringImpl(clazz: Clazz): Tree = {
+      def overrideToString(clazz: Clazz): Clazz = {
+        addMethod(clazz, createToString(clazz, toStringImpl(clazz)))
+      }
+      private def toStringImpl(clazz: Clazz): Tree = {
         val className = api.className(clazz)
 
         val paramListParts: List[Tree] = params(clazz).zipWithIndex.flatMap {

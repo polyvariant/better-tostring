@@ -14,7 +14,7 @@ import dotty.tools.dotc.typer.FrontEnd
 import dotty.tools.dotc.transform.PostTyper
 import dotty.tools.dotc.core.Decorators._
 
-class BetterToStringPlugin extends StandardPlugin:
+final class BetterToStringPlugin extends StandardPlugin:
   override val name: String = "better-tostring"
   override val description: String = "scala compiler plugin for better default toString implementations"
   override def init(options: List[String]): List[PluginPhase] = List(new BetterToStringPluginPhase)
@@ -22,17 +22,18 @@ class BetterToStringPlugin extends StandardPlugin:
 import dotty.tools.dotc.ast.Trees
 import tpd._
 
-trait Scala3CompilerApi extends CompilerApi {
+trait Scala3CompilerApi extends CompilerApi:
   type Tree = Trees.Tree[Types.Type]
   type Clazz = Scala3CompilerApi.ClassContext
   type Param = ValDef
   type ParamName = Names.TermName
-}
+  type Method = DefDef
 
-object Scala3CompilerApi {
-  final case class ClassContext(t: Template, clazz: ClassSymbol)
+object Scala3CompilerApi:
+  final case class ClassContext(t: Template, clazz: ClassSymbol):
+    def mapTemplate(f: Template => Template): ClassContext = copy(t = f(t))
 
-  def instance(using Context): Scala3CompilerApi = new Scala3CompilerApi {
+  def instance(using Context): Scala3CompilerApi = new Scala3CompilerApi:
     def params(clazz: Clazz): List[Param] =
       clazz.t.body.collect {
         case v: ValDef if v.mods.is(CaseAccessor) => v
@@ -43,34 +44,37 @@ object Scala3CompilerApi {
     def paramName(param: Param): ParamName = param.name
     def selectInThis(clazz: Clazz, name: ParamName): Tree = This(clazz.clazz).select(name)
     def concat(l: Tree, r: Tree): Tree = l.select("+".toTermName).appliedTo(r)
-  }
-}
 
-class BetterToStringPluginPhase extends PluginPhase:
+    def createToString(owner: Clazz, body: Tree): Method = {
+      val clazz = owner.clazz
+      // this was adapted from dotty.tools.dotc.transform.SyntheticMembers (line 115)
+      val sym = Symbols.defn.Any_toString
+
+      val toStringSymbol = sym.copy(
+        owner = clazz,
+        flags = sym.flags | Override,
+        info = clazz.thisType.memberInfo(sym),
+        coord = clazz.coord
+      ).entered.asTerm
+
+      DefDef(toStringSymbol, body)
+    }
+
+    def addMethod(clazz: Clazz, method: Method): Clazz =
+      clazz.mapTemplate(
+        t => cpy.Template(t)(body = t.body :+ method)
+      )
+
+final class BetterToStringPluginPhase extends PluginPhase:
 
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: Set[String] = Set(FrontEnd.name)
 
-  private def addToString(t: Template, clazz: ClassSymbol)(using Context): Template = {
-    val impl: BetterToStringImpl[Scala3CompilerApi] = BetterToStringImpl.instance(Scala3CompilerApi.instance)
-    val toStringImpl = impl.toStringImpl(Scala3CompilerApi.ClassContext(t, clazz))
-
-    // this was adapted from dotty.tools.dotc.transform.SyntheticMembers (line 115)
-
-    val sym = Symbols.defn.Any_toString
-
-    val toStringSymbol = sym.copy(
-      owner = clazz,
-      flags = sym.flags | Override,
-      info = clazz.thisType.memberInfo(sym),
-      coord = clazz.coord
-    ).entered.asTerm
-    // I think it should actually be enteredAfter, but this is simpler and it seems to work (PluginPhase is not a DenotTransformer)
-
-    val toStringDef = DefDef(toStringSymbol, toStringImpl)
-
-    cpy.Template(t)(body = toStringDef :: t.body)
-  }
+  private def addToString(t: Template, clazz: ClassSymbol)(using Context): Template =
+    BetterToStringImpl
+      .instance(Scala3CompilerApi.instance)
+      .overrideToString(Scala3CompilerApi.ClassContext(t, clazz))
+      .t
 
   override def transformTemplate(t: Template)(using ctx: Context): Tree =
     val clazz = ctx.owner.asClass
