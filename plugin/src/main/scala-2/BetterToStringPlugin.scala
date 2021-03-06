@@ -27,7 +27,7 @@ class BetterToStringPluginComponent(val global: Global)
     }
 
     val toStringImpl: Tree = {
-      val className = clazz.name.toString()
+      val className = clazz.name.toString
 
       val paramListParts: List[Tree] = params.zipWithIndex.flatMap {
         case (v, index) =>
