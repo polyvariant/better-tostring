@@ -4,8 +4,11 @@ import dotty.tools.dotc.ast.tpd
 import dotty.tools.dotc.core.Contexts.Context
 import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.core.Flags._
+import dotty.tools.dotc.core.Types
+import dotty.tools.dotc.core.Names
 import dotty.tools.dotc.core.Constants.Constant
 import dotty.tools.dotc.core.Symbols.Symbol
+import dotty.tools.dotc.core.Symbols.ClassSymbol
 import dotty.tools.dotc.plugins.{PluginPhase, StandardPlugin}
 import dotty.tools.dotc.typer.FrontEnd
 import dotty.tools.dotc.transform.PostTyper
@@ -16,40 +19,41 @@ class BetterToStringPlugin extends StandardPlugin:
   override val description: String = "scala compiler plugin for better default toString implementations"
   override def init(options: List[String]): List[PluginPhase] = List(new BetterToStringPluginPhase)
 
+import dotty.tools.dotc.ast.Trees
+import tpd._
+
+trait Scala3CompilerApi extends CompilerApi {
+  type Tree = Trees.Tree[Types.Type]
+  type Clazz = Scala3CompilerApi.ClassContext
+  type Param = ValDef
+  type ParamName = Names.TermName
+}
+
+object Scala3CompilerApi {
+  final case class ClassContext(t: Template, clazz: ClassSymbol)
+
+  def instance(using Context): Scala3CompilerApi = new Scala3CompilerApi {
+    def params(clazz: Clazz): List[Param] =
+      clazz.t.body.collect {
+        case v: ValDef if v.mods.is(CaseAccessor) => v
+      }
+
+    def className(clazz: Clazz): String = clazz.clazz.name.toString
+    def literalConstant(value: String): Tree = Literal(Constant(value))
+    def paramName(param: Param): ParamName = param.name
+    def selectInThis(clazz: Clazz, name: ParamName): Tree = This(clazz.clazz).select(name)
+    def concat(l: Tree, r: Tree): Tree = l.select("+".toTermName).appliedTo(r)
+  }
+}
+
 class BetterToStringPluginPhase extends PluginPhase:
-  import tpd._
 
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: Set[String] = Set(FrontEnd.name)
 
-  private def addToString(t: Template, clazz: Symbols.ClassSymbol)(using Context): Template = {
-    val params = t.body.collect {
-      case v: ValDef if v.mods.is(CaseAccessor) => v
-    }
-
-    val toStringImpl = {
-      val className = clazz.name.toString
-
-      val paramListParts = params.zipWithIndex.flatMap {
-        case (v, index) =>
-          val commaPrefix = if (index > 0) ", " else ""
-
-          List(
-            Literal(Constant(commaPrefix ++ v.name.toString ++ " = ")),
-            This(clazz).select(v.name)
-          )
-      }
-
-      val parts =
-        List(
-          List(Literal(Constant(className ++ "("))),
-          paramListParts,
-          List(Literal(Constant(")")))
-        ).flatten
-
-
-      parts.reduceLeft((a, b) => a.select("+".toTermName).appliedTo(b))
-    }
+  private def addToString(t: Template, clazz: ClassSymbol)(using Context): Template = {
+    val impl: BetterToStringImpl[Scala3CompilerApi] = BetterToStringImpl.instance(Scala3CompilerApi.instance)
+    val toStringImpl = impl.toStringImpl(Scala3CompilerApi.ClassContext(t, clazz))
 
     // this was adapted from dotty.tools.dotc.transform.SyntheticMembers (line 115)
 

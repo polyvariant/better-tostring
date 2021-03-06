@@ -14,6 +14,32 @@ class BetterToStringPlugin(override val global: Global) extends Plugin {
   )
 }
 
+trait Scala2CompilerApi[G <: Global] extends CompilerApi {
+  val theGlobal: G
+  type Tree = theGlobal.Tree
+  type Clazz = theGlobal.ClassDef
+  type Param = theGlobal.ValDef
+  type ParamName = theGlobal.TermName
+}
+
+object Scala2CompilerApi {
+  def instance(global: Global): Scala2CompilerApi[global.type] =
+    new Scala2CompilerApi[global.type] {
+      val theGlobal: global.type = global
+      import global._
+
+      def params(clazz: Clazz): List[Param] = clazz.impl.body.collect {
+        case v: ValDef if v.mods.hasFlag(Flags.CASEACCESSOR) => v
+      }
+
+      def className(clazz: Clazz): String = clazz.name.toString
+      def literalConstant(value: String): Tree = Literal(Constant(value))
+      def paramName(param: Param): ParamName = param.name
+      def selectInThis(clazz: Clazz, name: ParamName): Tree = q"this.$name"
+      def concat(l: Tree, r: Tree): Tree = q"$l + $r"
+    }
+}
+
 class BetterToStringPluginComponent(val global: Global)
     extends PluginComponent
     with TypingTransformers {
@@ -21,33 +47,11 @@ class BetterToStringPluginComponent(val global: Global)
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: List[String] = List("parser")
 
+  private val impl: BetterToStringImpl[Scala2CompilerApi[global.type]] =
+    BetterToStringImpl.instance(Scala2CompilerApi.instance(global))
+
   private def addToString(clazz: ClassDef): ClassDef = {
-    val params = clazz.impl.body.collect {
-      case v: ValDef if v.mods.hasFlag(Flags.CASEACCESSOR) => v
-    }
-
-    val toStringImpl: Tree = {
-      val className = clazz.name.toString
-
-      val paramListParts: List[Tree] = params.zipWithIndex.flatMap {
-        case (v, index) =>
-          val commaPrefix = if (index > 0) ", " else ""
-
-          List(
-            Literal(Constant(commaPrefix ++ v.name.toString ++ " = ")),
-            q"this.${v.name}"
-          )
-      }
-
-      val parts =
-        List(
-          List(Literal(Constant(className ++ "("))),
-          paramListParts,
-          List(Literal(Constant(")")))
-        ).flatten
-
-      parts.reduceLeft((a, b) => q"$a + $b")
-    }
+    val toStringImpl: Tree = impl.toStringImpl(clazz)
 
     val methodBody = DefDef(
       Modifiers(Flags.OVERRIDE),
