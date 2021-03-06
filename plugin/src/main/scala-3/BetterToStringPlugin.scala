@@ -22,8 +22,6 @@ class BetterToStringPluginPhase extends PluginPhase:
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: Set[String] = Set(FrontEnd.name)
 
-  val eprintln = System.err.println(_: Any)
-
   override def transformTemplate(t: Template)(using ctx: Context): Tree =
     val clazz = ctx.owner.asClass
     if !clazz.flags.is(CaseClass) then return t
@@ -44,24 +42,29 @@ class BetterToStringPluginPhase extends PluginPhase:
     ).entered.asTerm
     // I think it should actually be enteredAfter, but this is simpler and it seems to work (PluginPhase is not a DenotTransformer)
 
-    def str = (s: String) => Literal(Constant(s))
-    // can't be an extension block, because overloading methods doesn't work if the block is inside a method O_o
-    implicit class TreeExtensions(self: Tree):
-      def concat(other: Tree) = self.select("+".toTermName).appliedTo(other)
-      def concat(s: String) = self.select("+".toTermName).appliedTo(str(s))
-      def concat(sym: Symbol) = self.select("+".toTermName).appliedTo(This(clazz).select(sym))
-
     val vals = t.body.collect { case v: ValDef if v.mods.is(CaseAccessor) => v }
 
-    var body: Tree = str(clazz.name.toString + "(")
-    for (v, i) <- vals.zipWithIndex do
-      if i > 0 then body = body.concat(", ")
-      body = body.concat(v.symbol.name.toString + " = ")
-      body = body.concat(v.symbol)
-    body = body.concat(")")
+    val paramListParts = vals.zipWithIndex.flatMap {
+      case (v, index) =>
+        val commaPrefix = if (index > 0) ", " else ""
+
+        List(
+          Literal(Constant(commaPrefix ++ v.name.toString ++ " = ")),
+          This(clazz).select(v.name)
+        )
+    }
+
+    val className = clazz.name.toString
+
+    val parts =
+      List(
+        List(Literal(Constant(className ++ "("))),
+        paramListParts,
+        List(Literal(Constant(")")))
+      ).flatten
+
+    val body = parts.reduceLeft((a, b) => a.select("+".toTermName).appliedTo(b))
 
     val toStringDef = DefDef(toStringSymbol, body)
-
-    // eprintln(toStringDef.show)
 
     cpy.Template(t)(body = toStringDef :: t.body)

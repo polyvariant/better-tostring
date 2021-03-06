@@ -7,11 +7,16 @@ import scala.reflect.internal.Flags
 
 class BetterToStringPlugin(override val global: Global) extends Plugin {
   override val name: String = "better-tostring"
-  override val description: String = "scala compiler plugin for better default toString implementations"
-  override val components: List[PluginComponent] = List(new BetterToStringPluginComponent(global))
+  override val description: String =
+    "scala compiler plugin for better default toString implementations"
+  override val components: List[PluginComponent] = List(
+    new BetterToStringPluginComponent(global)
+  )
 }
 
-class BetterToStringPluginComponent(val global: Global) extends PluginComponent with TypingTransformers {
+class BetterToStringPluginComponent(val global: Global)
+    extends PluginComponent
+    with TypingTransformers {
   import global._
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: List[String] = List("parser")
@@ -71,19 +76,22 @@ class BetterToStringPluginComponent(val global: Global) extends PluginComponent 
     else clazz
   }
 
-  private def modifyClasses(f: ClassDef => ClassDef)(tree: Tree): Tree = tree match {
-    case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(f)))
-    case m: ModuleDef  => m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(f))))
-    //Only case classes
-    case clazz: ClassDef if clazz.mods.hasFlag(Flags.CASE) => f(clazz)
-    case other                                             => other
-  }
+  private def modifyClasses(f: ClassDef => ClassDef)(tree: Tree): Tree =
+    tree match {
+      case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(f)))
+      case m: ModuleDef =>
+        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(f))))
+      //Only case classes
+      case clazz: ClassDef if clazz.mods.hasFlag(Flags.CASE) => f(clazz)
+      case other                                             => other
+    }
 
   override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
 
     override def apply(unit: CompilationUnit): Unit = {
       val trans = new Transformer {
-        override def transform(tree: Tree): Tree = modifyClasses(transformClass)(tree)
+        override def transform(tree: Tree): Tree =
+          modifyClasses(transformClass)(tree)
       }
 
       trans.transformUnit(unit)
