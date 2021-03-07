@@ -51,6 +51,12 @@ object Scala2CompilerApi {
 
       def addMethod(clazz: Clazz, method: Method): Clazz =
         clazz.copy(impl = clazz.impl.copy(body = clazz.impl.body :+ method))
+
+      def methodNames(clazz: Clazz): List[String] = clazz.impl.body.collect {
+        case d: DefDef => d.name.toString
+      }
+
+      def isCaseClass(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.CASE)
     }
 }
 
@@ -64,39 +70,26 @@ final class BetterToStringPluginComponent(val global: Global)
   private val impl: BetterToStringImpl[Scala2CompilerApi[global.type]] =
     BetterToStringImpl.instance(Scala2CompilerApi.instance(global))
 
-  private def transformClass(clazz: ClassDef): ClassDef = {
-
-    val isCaseClass = clazz.mods.hasFlag(Flags.CASE)
-
-    val hasToString: Boolean = clazz.impl.body.exists {
-      case d: DefDef if d.name.toString == "toString" => true
-      case _                                          => false
-    }
-
-    val shouldModify = isCaseClass && !hasToString
-
-    if (shouldModify) impl.overrideToString(clazz)
-    else clazz
-  }
-
-  private def modifyClasses(f: ClassDef => ClassDef)(tree: Tree): Tree =
+  private def modifyClasses(tree: Tree): Tree =
     tree match {
-      case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(f)))
+      case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses))
       case m: ModuleDef =>
-        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(f))))
-      case clazz: ClassDef => f(clazz)
-      case other           => other
+        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses)))
+      case clazz: ClassDef =>
+        impl.transformClass(
+          clazz,
+          // If it was nested, we wouldn't be in this branch.
+          // Scala 2.x compiler API limitation (classes can't tell what the owner is).
+          // This should be more optimal as we don't traverse every template, but it hasn't been benchmarked.
+          isNested = _ => false
+        )
+      case other => other
     }
 
   override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
-
-    override def apply(unit: CompilationUnit): Unit = {
-      val trans = new Transformer {
-        override def transform(tree: Tree): Tree =
-          modifyClasses(transformClass)(tree)
-      }
-
-      trans.transformUnit(unit)
-    }
+    override def apply(unit: CompilationUnit): Unit =
+      new Transformer {
+        override def transform(tree: Tree): Tree = modifyClasses(tree)
+      }.transformUnit(unit)
   }
 }

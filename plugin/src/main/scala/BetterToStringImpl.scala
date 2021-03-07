@@ -21,12 +21,15 @@ trait CompilerApi {
 
   def createToString(clazz: Clazz, body: Tree): Method
   def addMethod(clazz: Clazz, method: Method): Clazz
+  def methodNames(clazz: Clazz): List[String]
+  def isCaseClass(clazz: Clazz): Boolean
 }
 
 trait BetterToStringImpl[+C <: CompilerApi] {
   val compilerApi: C
-  def overrideToString(clazz: compilerApi.Clazz): compilerApi.Clazz
-  // def transformClasses()
+  import compilerApi.Clazz
+
+  def transformClass(clazz: Clazz, isNested: Clazz => Boolean): Clazz
 }
 
 object BetterToStringImpl {
@@ -38,9 +41,22 @@ object BetterToStringImpl {
 
       import api._
 
-      def overrideToString(clazz: Clazz): Clazz = {
-        addMethod(clazz, createToString(clazz, toStringImpl(clazz)))
+      def transformClass(
+          clazz: Clazz,
+          isNested: Clazz => Boolean
+      ): Clazz = {
+        val hasToString: Boolean = methodNames(clazz).contains("toString")
+
+        val shouldModify =
+          isCaseClass(clazz) && !isNested(clazz) && !hasToString
+
+        if (shouldModify) overrideToString(clazz)
+        else clazz
       }
+
+      private def overrideToString(clazz: Clazz): Clazz =
+        addMethod(clazz, createToString(clazz, toStringImpl(clazz)))
+
       private def toStringImpl(clazz: Clazz): Tree = {
         val className = api.className(clazz)
 

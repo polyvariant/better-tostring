@@ -65,31 +65,23 @@ object Scala3CompilerApi:
         t => cpy.Template(t)(body = t.body :+ method)
       )
 
+    def methodNames(clazz: Clazz): List[String] = clazz.t.body.collect {
+      case d: DefDef => d.name.toString
+    }
+
+    def isCaseClass(clazz: Clazz): Boolean = clazz.clazz.flags.is(CaseClass)
+
 final class BetterToStringPluginPhase extends PluginPhase:
 
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: Set[String] = Set(FrontEnd.name)
 
-  private def addToString(t: Template, clazz: ClassSymbol)(using Context): Template =
-    BetterToStringImpl
-      .instance(Scala3CompilerApi.instance)
-      .overrideToString(Scala3CompilerApi.ClassContext(t, clazz))
-      .t
-
   override def transformTemplate(t: Template)(using ctx: Context): Tree =
     val clazz = ctx.owner.asClass
 
-    val isCaseClass = clazz.flags.is(CaseClass)
-
     val isNested = !(ctx.owner.owner.isPackageObject || ctx.owner.owner.is(Module))
 
-    val hasToString = t.body.exists {
-      case d: DefDef if d.name.toString == "toString" => true
-      case _ => false
-    }
-
-    val shouldModify = isCaseClass && !isNested && !hasToString
-
-    if(shouldModify)
-      addToString(t, ctx.owner.asClass)
-    else t
+    BetterToStringImpl
+      .instance(Scala3CompilerApi.instance)
+      .transformClass(Scala3CompilerApi.ClassContext(t, clazz), _ => isNested)
+      .t
