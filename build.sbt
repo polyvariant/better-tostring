@@ -31,6 +31,7 @@ ThisBuild / crossScalaVersions := Seq(
   "2.13.4",
   "2.13.5",
   //
+  "3.0.0-M3",
   "3.0.0-RC1"
 )
 
@@ -59,6 +60,11 @@ val commonSettings = Seq(
   scalacOptions -= "-Xfatal-warnings"
 )
 
+def scalatestVersion(scalaVersion: String) = scalaVersion match {
+  case "3.0.0-M3" => "3.2.3"
+  case _          => "3.2.5"
+}
+
 val plugin = project.settings(
   name := "better-tostring",
   commonSettings,
@@ -85,7 +91,7 @@ val tests = project.settings(
     ) //borrowed from bm4
   },
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.5" % Test
+    "org.scalatest" %% "scalatest" % scalatestVersion(scalaVersion.value) % Test
   )
 )
 
