@@ -3,7 +3,7 @@
 [![License](http://img.shields.io/:license-Apache%202-green.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Build Status](https://travis-ci.com/kubukoz/better-tostring.svg?branch=master)](https://travis-ci.com/kubukoz/better-tostring)
 [![Latest version](https://index.scala-lang.org/kubukoz/better-tostring/better-tostring/latest.svg)](https://index.scala-lang.org/kubukoz/better-tostring/better-tostring)
-[![Maven Central](https://img.shields.io/maven-central/v/com.kubukoz/better-tostring_2.13.1.svg)](http://search.maven.org/#search%7Cga%7C1%7Cbetter-tostring)
+[![Maven Central](https://img.shields.io/maven-central/v/com.kubukoz/better-tostring_2.13.5.svg)](http://search.maven.org/#search%7Cga%7C1%7Cbetter-tostring)
 
 A Scala compiler plugin that replaces the default `toString` implementation of case classes with a more verbose one.
 
@@ -31,7 +31,11 @@ In sbt:
 libraryDependencies += compilerPlugin("com.kubukoz" % "better-tostring" % version cross CrossVersion.full)
 ```
 
-The plugin is currently published for Scala 2.12.10, 2.12.11, 2.13.1 and 2.13.2.
+The plugin is currently published for the following Scala versions:
+
+- 2.12.10, 2.12.11, 2.12.12, 2.12.13
+- 2.13.1, 2.13.2, 2.13.3, 2.13.4, 2.13.5
+- 3.0.0-M3, 3.0.0-RC1
 
 ## What does the plugin actually do?
 
