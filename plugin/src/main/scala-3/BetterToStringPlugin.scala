@@ -88,6 +88,8 @@ final class BetterToStringPluginPhase extends PluginPhase:
       case _ => false
     }
 
-    if(isCaseClass && !isNested && !hasToString)
+    val shouldModify = isCaseClass && !isNested && !hasToString
+
+    if(shouldModify)
       addToString(t, ctx.owner.asClass)
     else t

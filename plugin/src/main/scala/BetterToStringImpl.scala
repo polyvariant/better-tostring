@@ -3,6 +3,8 @@ package com.kubukoz
 // Source-compatible core between 2.x and 3.x implementations
 
 trait CompilerApi {
+  // type Parent
+
   type Tree
   type Clazz
   type Param
@@ -24,7 +26,9 @@ trait CompilerApi {
 trait BetterToStringImpl[+C <: CompilerApi] {
   val compilerApi: C
   def overrideToString(clazz: compilerApi.Clazz): compilerApi.Clazz
+  // def transformClasses()
 }
+
 object BetterToStringImpl {
   def instance(
       api: CompilerApi

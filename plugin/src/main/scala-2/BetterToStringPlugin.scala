@@ -65,15 +65,15 @@ final class BetterToStringPluginComponent(val global: Global)
     BetterToStringImpl.instance(Scala2CompilerApi.instance(global))
 
   private def transformClass(clazz: ClassDef): ClassDef = {
-    val hasCustomToString: Boolean = clazz.impl.body.exists {
 
-      case fun: DefDef =>
-        //so meta
-        fun.name.toString == "toString"
-      case _ => false
+    val isCaseClass = clazz.mods.hasFlag(Flags.CASE)
+
+    val hasToString: Boolean = clazz.impl.body.exists {
+      case d: DefDef if d.name.toString == "toString" => true
+      case _                                          => false
     }
 
-    val shouldModify = !hasCustomToString
+    val shouldModify = isCaseClass && !hasToString
 
     if (shouldModify) impl.overrideToString(clazz)
     else clazz
@@ -84,9 +84,8 @@ final class BetterToStringPluginComponent(val global: Global)
       case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(f)))
       case m: ModuleDef =>
         m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(f))))
-      //Only case classes
-      case clazz: ClassDef if clazz.mods.hasFlag(Flags.CASE) => f(clazz)
-      case other                                             => other
+      case clazz: ClassDef => f(clazz)
+      case other           => other
     }
 
   override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
