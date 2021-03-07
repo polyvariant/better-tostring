@@ -18,7 +18,6 @@ inThisBuild(
 
 val GraalVM11 = "graalvm-ce-java11@20.3.0"
 
-// ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / scalaVersion := "3.0.0-RC1"
 ThisBuild / crossScalaVersions := Seq(
   "2.12.10",
