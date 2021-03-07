@@ -3,8 +3,6 @@ package com.kubukoz
 // Source-compatible core between 2.x and 3.x implementations
 
 trait CompilerApi {
-  // type Parent
-
   type Tree
   type Clazz
   type Param
@@ -27,9 +25,11 @@ trait CompilerApi {
 
 trait BetterToStringImpl[+C <: CompilerApi] {
   val compilerApi: C
-  import compilerApi.Clazz
 
-  def transformClass(clazz: Clazz, isNested: Clazz => Boolean): Clazz
+  def transformClass(
+      clazz: compilerApi.Clazz,
+      isNested: Boolean
+  ): compilerApi.Clazz
 }
 
 object BetterToStringImpl {
@@ -43,12 +43,12 @@ object BetterToStringImpl {
 
       def transformClass(
           clazz: Clazz,
-          isNested: Clazz => Boolean
+          isNested: Boolean
       ): Clazz = {
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
         val shouldModify =
-          isCaseClass(clazz) && !isNested(clazz) && !hasToString
+          isCaseClass(clazz) && !isNested && !hasToString
 
         if (shouldModify) overrideToString(clazz)
         else clazz
