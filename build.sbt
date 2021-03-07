@@ -18,7 +18,7 @@ inThisBuild(
 
 val GraalVM11 = "graalvm-ce-java11@20.3.0"
 
-ThisBuild / scalaVersion := "2.12.10"
+ThisBuild / scalaVersion := "3.0.0-RC1"
 ThisBuild / crossScalaVersions := Seq(
   "2.12.10",
   "2.12.11",
@@ -29,7 +29,10 @@ ThisBuild / crossScalaVersions := Seq(
   "2.13.2",
   "2.13.3",
   "2.13.4",
-  "2.13.5"
+  "2.13.5",
+  //
+  "3.0.0-M3",
+  "3.0.0-RC1"
 )
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
@@ -57,13 +60,22 @@ val commonSettings = Seq(
   scalacOptions -= "-Xfatal-warnings"
 )
 
+def scalatestVersion(scalaVersion: String) = scalaVersion match {
+  case "3.0.0-M3" => "3.2.3"
+  case _          => "3.2.5"
+}
+
 val plugin = project.settings(
   name := "better-tostring",
   commonSettings,
   crossTarget := target.value / s"scala-${scalaVersion.value}", // workaround for https://github.com/sbt/sbt/issues/5097
   crossVersion := CrossVersion.full,
   libraryDependencies ++= Seq(
-    scalaOrganization.value % "scala-compiler" % scalaVersion.value
+    scalaOrganization.value % (
+      if (isDotty.value)
+        s"scala3-compiler_${scalaVersion.value}"
+      else "scala-compiler"
+    ) % scalaVersion.value
   )
 )
 
@@ -79,7 +91,7 @@ val tests = project.settings(
     ) //borrowed from bm4
   },
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.5" % Test
+    "org.scalatest" %% "scalatest" % scalatestVersion(scalaVersion.value) % Test
   )
 )
 
