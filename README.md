@@ -51,3 +51,10 @@ The plugin is currently published for the following Scala versions:
 - Potentially ignore value classes
 
 If you have ideas for improving the plugin, feel free to create an issue and I'll consider making it happen :)
+
+## Maintainers
+
+The maintainers of this project (people who can merge PRs and make releases) are:
+
+- Jakub Kozłowski (@kubukoz)
+- Michał Pawlik (@majk-p)
