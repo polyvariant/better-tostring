@@ -58,3 +58,4 @@ The maintainers of this project (people who can merge PRs and make releases) are
 
 - Jakub Kozłowski (@kubukoz)
 - Michał Pawlik (@majk-p)
+- Mikołaj Robakowski (@mrobakowski)
