@@ -56,6 +56,6 @@ If you have ideas for improving the plugin, feel free to create an issue and I'l
 
 The maintainers of this project (people who can merge PRs and make releases) are:
 
-- Jakub Kozłowski (@kubukoz)
-- Michał Pawlik (@majk-p)
-- Mikołaj Robakowski (@mrobakowski)
+- Jakub Kozłowski ([@kubukoz](https://github.com/kubukoz))
+- Michał Pawlik ([@majk-p](https://github.com/majk-p))
+- Mikołaj Robakowski ([@mrobakowski](https://github.com/mrobakowski))
