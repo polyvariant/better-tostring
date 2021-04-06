@@ -6,4 +6,3 @@ target/
 **/secret.conf
 **/.DS_Store
 .vscode/
-.scalafmt.conf
