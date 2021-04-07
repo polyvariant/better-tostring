@@ -70,4 +70,5 @@ object MethodLocalWrapper {
 
     LocalClass("a").toString()
   }
+
 }
