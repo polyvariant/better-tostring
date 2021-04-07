@@ -89,7 +89,7 @@ val plugin = project.settings(
 )
 
 val tests = project.settings(
-  skip in publish := true,
+  (publish / skip) := true,
   commonSettings,
   scalacOptions ++= {
     val jar = (plugin / Compile / packageBin).value
@@ -108,5 +108,5 @@ val betterToString =
   project
     .in(file("."))
     .settings(name := "root")
-    .settings(commonSettings, skip in publish := true)
+    .settings(commonSettings, (publish / skip) := true)
     .aggregate(plugin, tests)
