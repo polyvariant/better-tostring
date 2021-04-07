@@ -10,14 +10,14 @@ final class BetterToStringPlugin(override val global: Global) extends Plugin {
   override val name: String = "better-tostring"
   override val description: String =
     "scala compiler plugin for better default toString implementations"
+
   override val components: List[PluginComponent] = List(
     new BetterToStringPluginComponent(global)
   )
+
 }
 
-final class BetterToStringPluginComponent(val global: Global)
-    extends PluginComponent
-    with TypingTransformers {
+final class BetterToStringPluginComponent(val global: Global) extends PluginComponent with TypingTransformers {
   import global._
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: List[String] = List("parser")
@@ -27,8 +27,8 @@ final class BetterToStringPluginComponent(val global: Global)
 
   private def modifyClasses(tree: Tree): Tree =
     tree match {
-      case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses))
-      case m: ModuleDef =>
+      case p: PackageDef   => p.copy(stats = p.stats.map(modifyClasses))
+      case m: ModuleDef    =>
         m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses)))
       case clazz: ClassDef =>
         impl.transformClass(
@@ -38,13 +38,16 @@ final class BetterToStringPluginComponent(val global: Global)
           // This should be more optimal as we don't traverse every template, but it hasn't been benchmarked.
           isNested = false
         )
-      case other => other
+      case other           => other
     }
 
   override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
+
     override def apply(unit: CompilationUnit): Unit =
       new Transformer {
         override def transform(tree: Tree): Tree = modifyClasses(tree)
       }.transformUnit(unit)
+
   }
+
 }

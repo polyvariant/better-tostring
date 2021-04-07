@@ -27,14 +27,16 @@ trait BetterToStringImpl[+C <: CompilerApi] {
   val compilerApi: C
 
   def transformClass(
-      clazz: compilerApi.Clazz,
-      isNested: Boolean
+    clazz: compilerApi.Clazz,
+    isNested: Boolean
   ): compilerApi.Clazz
+
 }
 
 object BetterToStringImpl {
+
   def instance(
-      api: CompilerApi
+    api: CompilerApi
   ): BetterToStringImpl[api.type] =
     new BetterToStringImpl[api.type] {
       val compilerApi: api.type = api
@@ -42,8 +44,8 @@ object BetterToStringImpl {
       import api._
 
       def transformClass(
-          clazz: Clazz,
-          isNested: Boolean
+        clazz: Clazz,
+        isNested: Boolean
       ): Clazz = {
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
@@ -60,16 +62,15 @@ object BetterToStringImpl {
       private def toStringImpl(clazz: Clazz): Tree = {
         val className = api.className(clazz)
 
-        val paramListParts: List[Tree] = params(clazz).zipWithIndex.flatMap {
-          case (v, index) =>
-            val commaPrefix = if (index > 0) ", " else ""
+        val paramListParts: List[Tree] = params(clazz).zipWithIndex.flatMap { case (v, index) =>
+          val commaPrefix = if (index > 0) ", " else ""
 
-            val name = paramName(v)
+          val name = paramName(v)
 
-            List(
-              literalConstant(commaPrefix ++ name.toString ++ " = "),
-              selectInThis(clazz, name)
-            )
+          List(
+            literalConstant(commaPrefix ++ name.toString ++ " = "),
+            selectInThis(clazz, name)
+          )
         }
 
         val parts =
@@ -81,5 +82,7 @@ object BetterToStringImpl {
 
         parts.reduceLeft(concat(_, _))
       }
+
     }
+
 }

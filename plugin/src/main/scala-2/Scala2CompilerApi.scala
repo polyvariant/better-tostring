@@ -14,6 +14,7 @@ trait Scala2CompilerApi[G <: Global] extends CompilerApi {
 }
 
 object Scala2CompilerApi {
+
   def instance(global: Global): Scala2CompilerApi[global.type] =
     new Scala2CompilerApi[global.type] {
       val theGlobal: global.type = global
@@ -41,10 +42,11 @@ object Scala2CompilerApi {
       def addMethod(clazz: Clazz, method: Method): Clazz =
         clazz.copy(impl = clazz.impl.copy(body = clazz.impl.body :+ method))
 
-      def methodNames(clazz: Clazz): List[String] = clazz.impl.body.collect {
-        case d: DefDef => d.name.toString
+      def methodNames(clazz: Clazz): List[String] = clazz.impl.body.collect { case d: DefDef =>
+        d.name.toString
       }
 
       def isCaseClass(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.CASE)
     }
+
 }
