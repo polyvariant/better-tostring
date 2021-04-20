@@ -41,13 +41,13 @@ The plugin is currently published for the following Scala versions:
 
 1. Only case classes located directly in `package`s or `object`s are changed. Nested classes and classes local to functions are currently ignored.
 2. Only the fields in the first parameter list are shown.
-3. If the class already overrides `toString` *directly*, it's not replaced.
+3. If the class is nested in an object (but not a package object), its name and a dot are prepended.
+4. If the class already overrides `toString` *directly*, it's not replaced.
 
 ## Roadmap
 
 - Ignore classes that inherit `toString` from a type that isn't `Object`
 - Add a way of overriding default behavior (blacklisting/whitelisting certain classes) - probably via an annotation in an extra dependency
-- Extend functionality to support ADTs - for example, `case object B extends A` inside `object A` could be shown as `A.B`
 - Potentially ignore value classes
 
 If you have ideas for improving the plugin, feel free to create an issue and I'll consider making it happen :)
