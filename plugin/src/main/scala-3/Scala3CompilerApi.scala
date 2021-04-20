@@ -20,6 +20,7 @@ trait Scala3CompilerApi extends CompilerApi:
   type Param = ValDef
   type ParamName = Names.TermName
   type Method = DefDef
+  type ClazzParent = Symbols.Symbol
 
 object Scala3CompilerApi:
   final case class ClassContext(t: Template, clazz: ClassSymbol):
@@ -32,6 +33,7 @@ object Scala3CompilerApi:
       }
 
     def className(clazz: Clazz): String = clazz.clazz.name.toString
+    def parentName(parent: ClazzParent): String = parent.effectiveName.toString
     def literalConstant(value: String): Tree = Literal(Constant(value))
     def paramName(param: Param): ParamName = param.name
     def selectInThis(clazz: Clazz, name: ParamName): Tree = This(clazz.clazz).select(name)

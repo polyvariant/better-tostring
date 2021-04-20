@@ -3,6 +3,7 @@ package com.kubukoz
 import dotty.tools.dotc.ast.tpd
 import dotty.tools.dotc.core.Contexts.Context
 import dotty.tools.dotc.core.Flags.Module
+import dotty.tools.dotc.core.Flags.Package
 import dotty.tools.dotc.plugins.PluginPhase
 import dotty.tools.dotc.plugins.StandardPlugin
 import dotty.tools.dotc.typer.FrontEnd
@@ -21,9 +22,14 @@ final class BetterToStringPluginPhase extends PluginPhase:
   override def transformTemplate(t: Template)(using ctx: Context): Tree =
     val clazz = ctx.owner.asClass
 
-    val isNested = !(ctx.owner.owner.isPackageObject || ctx.owner.owner.is(Module))
+    val ownerOwner = ctx.owner.owner
+    val isNested = !(ownerOwner.isPackageObject || ownerOwner.is(Module))
+    val parent = if (ownerOwner.is(Module) && !ownerOwner.is(Package) && !ownerOwner.isPackageObject)
+      Some(ctx.owner.owner)
+    else
+      None
 
     BetterToStringImpl
       .instance(Scala3CompilerApi.instance)
-      .transformClass(Scala3CompilerApi.ClassContext(t, clazz), isNested)
+      .transformClass(Scala3CompilerApi.ClassContext(t, clazz), isNested, parent)
       .t

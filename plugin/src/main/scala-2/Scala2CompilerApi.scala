@@ -11,6 +11,7 @@ trait Scala2CompilerApi[G <: Global] extends CompilerApi {
   type Param = ValDef
   type ParamName = TermName
   type Method = DefDef
+  type ClazzParent = ModuleDef
 }
 
 object Scala2CompilerApi {
@@ -25,6 +26,7 @@ object Scala2CompilerApi {
       }
 
       def className(clazz: Clazz): String = clazz.name.toString
+      def parentName(parent: ClazzParent) = parent.name.toString
       def literalConstant(value: String): Tree = Literal(Constant(value))
       def paramName(param: Param): ParamName = param.name
       def selectInThis(clazz: Clazz, name: ParamName): Tree = q"this.$name"

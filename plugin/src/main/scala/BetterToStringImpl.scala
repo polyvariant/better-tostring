@@ -8,8 +8,10 @@ trait CompilerApi {
   type Param
   type ParamName
   type Method
+  type ClazzParent
 
   def className(clazz: Clazz): String
+  def parentName(parent: ClazzParent): String
   def params(clazz: Clazz): List[Param]
   def literalConstant(value: String): Tree
 
@@ -28,7 +30,8 @@ trait BetterToStringImpl[+C <: CompilerApi] {
 
   def transformClass(
     clazz: compilerApi.Clazz,
-    isNested: Boolean
+    isNested: Boolean,
+    parent: Option[compilerApi.ClazzParent]
   ): compilerApi.Clazz
 
 }
@@ -45,22 +48,24 @@ object BetterToStringImpl {
 
       def transformClass(
         clazz: Clazz,
-        isNested: Boolean
+        isNested: Boolean,
+        parent: Option[ClazzParent]
       ): Clazz = {
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
         val shouldModify =
           isCaseClass(clazz) && !isNested && !hasToString
 
-        if (shouldModify) overrideToString(clazz)
+        if (shouldModify) overrideToString(clazz, parent)
         else clazz
       }
 
-      private def overrideToString(clazz: Clazz): Clazz =
-        addMethod(clazz, createToString(clazz, toStringImpl(clazz)))
+      private def overrideToString(clazz: Clazz, parent: Option[ClazzParent]): Clazz =
+        addMethod(clazz, createToString(clazz, toStringImpl(clazz, parent)))
 
-      private def toStringImpl(clazz: Clazz): Tree = {
+      private def toStringImpl(clazz: Clazz, parent: Option[ClazzParent]): Tree = {
         val className = api.className(clazz)
+        val parentPrefix = parent.map(p => api.parentName(p) ++ ".").getOrElse("")
 
         val paramListParts: List[Tree] = params(clazz).zipWithIndex.flatMap { case (v, index) =>
           val commaPrefix = if (index > 0) ", " else ""
@@ -75,7 +80,7 @@ object BetterToStringImpl {
 
         val parts =
           List(
-            List(literalConstant(className ++ "(")),
+            List(literalConstant(parentPrefix ++ className ++ "(")),
             paramListParts,
             List(literalConstant(")"))
           ).flatten
