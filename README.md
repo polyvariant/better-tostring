@@ -41,7 +41,7 @@ The plugin is currently published for the following Scala versions:
 
 1. Only case classes located directly in `package`s or `object`s are changed. Nested classes and classes local to functions are currently ignored.
 2. Only the fields in the first parameter list are shown.
-3. If the class is nested in an object (but not a package object), its name and a dot are prepended.
+3. If the class is nested in an object (but not a package object), the object's name and a dot are prepended.
 4. If the class already overrides `toString` *directly*, it's not replaced.
 
 ## Roadmap
