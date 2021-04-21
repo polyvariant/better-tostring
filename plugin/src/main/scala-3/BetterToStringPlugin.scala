@@ -3,7 +3,8 @@ package com.kubukoz
 import dotty.tools.dotc.ast.tpd
 import dotty.tools.dotc.core.Contexts.Context
 import dotty.tools.dotc.core.Flags.Module
-import dotty.tools.dotc.plugins.{PluginPhase, StandardPlugin}
+import dotty.tools.dotc.plugins.PluginPhase
+import dotty.tools.dotc.plugins.StandardPlugin
 import dotty.tools.dotc.typer.FrontEnd
 import tpd._
 
