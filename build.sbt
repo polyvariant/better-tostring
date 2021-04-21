@@ -72,7 +72,7 @@ def scalatestVersion(scalaVersion: String) =
   scalaVersion match {
     case "3.0.0-M3"  => "3.2.3"
     case "3.0.0-RC1" => "3.2.5"
-    case "3.0.0-RC2" => "2.3.7"
+    case "3.0.0-RC2" => "3.2.7"
     case _           => "3.2.8"
   }
 
