@@ -42,23 +42,24 @@ object Scala3CompilerApi:
       // this was adapted from dotty.tools.dotc.transform.SyntheticMembers (line 115)
       val sym = Symbols.defn.Any_toString
 
-      val toStringSymbol = sym.copy(
-        owner = clazz,
-        flags = sym.flags | Override,
-        info = clazz.thisType.memberInfo(sym),
-        coord = clazz.coord
-      ).entered.asTerm
+      val toStringSymbol = sym
+        .copy(
+          owner = clazz,
+          flags = sym.flags | Override,
+          info = clazz.thisType.memberInfo(sym),
+          coord = clazz.coord
+        )
+        .entered
+        .asTerm
 
       DefDef(toStringSymbol, body)
     }
 
     def addMethod(clazz: Clazz, method: Method): Clazz =
-      clazz.mapTemplate(
-        t => cpy.Template(t)(body = t.body :+ method)
-      )
+      clazz.mapTemplate(t => cpy.Template(t)(body = t.body :+ method))
 
-    def methodNames(clazz: Clazz): List[String] = clazz.t.body.collect {
-      case d: DefDef => d.name.toString
+    def methodNames(clazz: Clazz): List[String] = clazz.t.body.collect { case d: DefDef =>
+      d.name.toString
     }
 
     def isCaseClass(clazz: Clazz): Boolean = clazz.clazz.flags.is(CaseClass)
