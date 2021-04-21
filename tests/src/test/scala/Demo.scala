@@ -36,13 +36,13 @@ class Tests extends AnyWordSpec with Matchers {
   }
 
   "Class nested in an object" should {
-    "include parent's name" in {
+    "include enclosing object's name" in {
       ObjectNestedParent.ObjectNestedClass("Joe").toString shouldBe "ObjectNestedParent.ObjectNestedClass(name = Joe)"
     }
   }
 
   "Class nested in a package object" should {
-    "not include parent's name" in {
+    "not include package's name" in {
       pack.InPackageObject("Joe").toString shouldBe "InPackageObject(name = Joe)"
     }
   }

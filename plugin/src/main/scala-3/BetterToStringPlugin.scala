@@ -24,12 +24,12 @@ final class BetterToStringPluginPhase extends PluginPhase:
 
     val ownerOwner = ctx.owner.owner
     val isNested = !(ownerOwner.isPackageObject || ownerOwner.is(Module))
-    val parent = if (ownerOwner.is(Module) && !ownerOwner.is(Package) && !ownerOwner.isPackageObject)
+    val enclosingObject = if (ownerOwner.is(Module) && !ownerOwner.is(Package) && !ownerOwner.isPackageObject)
       Some(ctx.owner.owner)
     else
       None
 
     BetterToStringImpl
       .instance(Scala3CompilerApi.instance)
-      .transformClass(Scala3CompilerApi.ClassContext(t, clazz), isNested, parent)
+      .transformClass(Scala3CompilerApi.ClassContext(t, clazz), isNested, enclosingObject)
       .t

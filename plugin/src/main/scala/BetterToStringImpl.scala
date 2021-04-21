@@ -8,10 +8,10 @@ trait CompilerApi {
   type Param
   type ParamName
   type Method
-  type ClazzParent
+  type EnclosingObject
 
   def className(clazz: Clazz): String
-  def parentName(parent: ClazzParent): String
+  def enclosingObjectName(enclosingObject: EnclosingObject): String
   def params(clazz: Clazz): List[Param]
   def literalConstant(value: String): Tree
 
@@ -31,7 +31,7 @@ trait BetterToStringImpl[+C <: CompilerApi] {
   def transformClass(
     clazz: compilerApi.Clazz,
     isNested: Boolean,
-    parent: Option[compilerApi.ClazzParent]
+    enclosingObject: Option[compilerApi.EnclosingObject]
   ): compilerApi.Clazz
 
 }
@@ -49,23 +49,23 @@ object BetterToStringImpl {
       def transformClass(
         clazz: Clazz,
         isNested: Boolean,
-        parent: Option[ClazzParent]
+        enclosingObject: Option[EnclosingObject]
       ): Clazz = {
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
         val shouldModify =
           isCaseClass(clazz) && !isNested && !hasToString
 
-        if (shouldModify) overrideToString(clazz, parent)
+        if (shouldModify) overrideToString(clazz, enclosingObject)
         else clazz
       }
 
-      private def overrideToString(clazz: Clazz, parent: Option[ClazzParent]): Clazz =
-        addMethod(clazz, createToString(clazz, toStringImpl(clazz, parent)))
+      private def overrideToString(clazz: Clazz, enclosingObject: Option[EnclosingObject]): Clazz =
+        addMethod(clazz, createToString(clazz, toStringImpl(clazz, enclosingObject)))
 
-      private def toStringImpl(clazz: Clazz, parent: Option[ClazzParent]): Tree = {
+      private def toStringImpl(clazz: Clazz, enclosingObject: Option[EnclosingObject]): Tree = {
         val className = api.className(clazz)
-        val parentPrefix = parent.map(p => api.parentName(p) ++ ".").getOrElse("")
+        val parentPrefix = enclosingObject.map(p => api.enclosingObjectName(p) ++ ".").getOrElse("")
 
         val paramListParts: List[Tree] = params(clazz).zipWithIndex.flatMap { case (v, index) =>
           val commaPrefix = if (index > 0) ", " else ""

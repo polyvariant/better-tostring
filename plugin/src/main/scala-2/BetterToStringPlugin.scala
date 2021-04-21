@@ -25,14 +25,14 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
   private val impl: BetterToStringImpl[Scala2CompilerApi[global.type]] =
     BetterToStringImpl.instance(Scala2CompilerApi.instance(global))
 
-  private def modifyClasses(tree: Tree, parent: Option[ModuleDef]): Tree =
+  private def modifyClasses(tree: Tree, enclosingObject: Option[ModuleDef]): Tree =
     tree match {
       case p: PackageDef   => p.copy(stats = p.stats.map(modifyClasses(_, None)))
       case m: ModuleDef    =>
         // couldn't find any nice api for this. `m.symbol.isPackageObject` does not work
         val isPackageObject = m.symbol.isInstanceOf[NoSymbol] && m.name.toString == "package"
-        val parent = if (!isPackageObject) Some(m) else None
-        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, parent))))
+        val enclosingObject = if (!isPackageObject) Some(m) else None
+        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, enclosingObject))))
       case clazz: ClassDef =>
         impl.transformClass(
           clazz,
@@ -40,7 +40,7 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
           // Scala 2.x compiler API limitation (classes can't tell what the owner is).
           // This should be more optimal as we don't traverse every template, but it hasn't been benchmarked.
           isNested = false,
-          parent
+          enclosingObject
         )
       case other           => other
     }
