@@ -24,6 +24,9 @@ inThisBuild(
 
 val GraalVM11 = "graalvm-ce-java11@20.3.0"
 
+// for dottydoc
+ThisBuild / resolvers += Resolver.JCenterRepository
+
 ThisBuild / scalaVersion := "3.0.0-RC3"
 ThisBuild / crossScalaVersions := Seq(
   "2.12.10",
