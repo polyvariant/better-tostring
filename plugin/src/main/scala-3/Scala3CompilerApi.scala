@@ -26,6 +26,7 @@ object Scala3CompilerApi:
     def mapTemplate(f: Template => Template): ClassContext = copy(t = f(t))
 
   def instance(using Context): Scala3CompilerApi = new Scala3CompilerApi:
+
     def params(clazz: Clazz): List[Param] =
       clazz.t.body.collect {
         case v: ValDef if v.mods.is(CaseAccessor) => v
