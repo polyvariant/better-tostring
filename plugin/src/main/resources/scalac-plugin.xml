@@ -1,4 +1,4 @@
 <plugin>
- <name>better-tostring</name>
- <classname>com.kubukoz.BetterToStringPlugin</classname>
+    <name>better-tostring</name>
+    <classname>com.kubukoz.BetterToStringPlugin</classname>
 </plugin>
