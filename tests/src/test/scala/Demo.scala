@@ -53,6 +53,12 @@ class Tests extends AnyWordSpec with Matchers {
     }
   }
 
+  "Class nested in an object itself nested in a class" should {
+    "stringify normally" in {
+      new DeeplyNestedInClassGrandparent().DeeplyNestedInClassParent.DeeplyNestedInClassClass("a").toString shouldBe "DeeplyNestedInClassClass(a)"
+    }
+  }
+
   "Method-local class" should {
     "stringify normally" in {
       MethodLocalWrapper.methodLocalClassStringify shouldBe "LocalClass(a)"
@@ -77,6 +83,12 @@ final class NestedParent() {
 
 object ObjectNestedParent {
   case class ObjectNestedClass(name: String)
+}
+
+final class DeeplyNestedInClassGrandparent {
+  object DeeplyNestedInClassParent {
+    case class DeeplyNestedInClassClass(name: String)
+  }
 }
 
 object MethodLocalWrapper {
