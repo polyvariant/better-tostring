@@ -29,10 +29,7 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
     tree match {
       case p: PackageDef   => p.copy(stats = p.stats.map(modifyClasses(_, None)))
       case m: ModuleDef    =>
-        // couldn't find any nice api for this. `m.symbol.isPackageObject` does not work
-        val isPackageObject = m.symbol.isInstanceOf[NoSymbol] && m.name.toString == "package"
-        val enclosingObject = if (!isPackageObject) Some(m) else None
-        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, enclosingObject))))
+        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, Some(m)))))
       case clazz: ClassDef =>
         impl.transformClass(
           clazz,

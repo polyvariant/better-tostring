@@ -26,7 +26,12 @@ object Scala2CompilerApi {
       }
 
       def className(clazz: Clazz): String = clazz.name.toString
-      def enclosingObjectName(enclosingObject: EnclosingObject) = enclosingObject.name.toString
+
+      def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean =
+        // couldn't find any nice api for this. `m.symbol.isPackageObject` does not work after the parser compiler phase (needs to run later).
+        enclosingObject.symbol.isInstanceOf[NoSymbol] && enclosingObject.name.toString == "package"
+
+      def enclosingObjectName(enclosingObject: EnclosingObject): String = enclosingObject.name.toString
       def literalConstant(value: String): Tree = Literal(Constant(value))
       def paramName(param: Param): ParamName = param.name
       def selectInThis(clazz: Clazz, name: ParamName): Tree = q"this.$name"

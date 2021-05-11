@@ -26,25 +26,13 @@ final class BetterToStringPluginPhase extends PluginPhase:
     val clazz = ctx.owner.asClass
 
     val ownerOwner = ctx.owner.owner
-    val isNested = !(ownerOwner.isPackageObject || ownerOwner.is(Module)) || isAnyAncestorAClass(ownerOwner)
+    val isNested = ownerOwner.ownersIterator.exists(!_.is(Module))
 
     val enclosingObject =
-      if (
-        ownerOwner.is(Module) &&
-        !ownerOwner.is(Package) &&
-        !ownerOwner.isPackageObject
-      ) then Some(ctx.owner.owner)
+      if (ownerOwner.is(Module)) then Some(ownerOwner)
       else None
 
     BetterToStringImpl
       .instance(Scala3CompilerApi.instance)
       .transformClass(Scala3CompilerApi.ClassContext(t, clazz), isNested, enclosingObject)
       .t
-
-  @tailrec private def isAnyAncestorAClass(sym: Symbols.Symbol)(using Context): Boolean =
-    if sym == Symbols.NoSymbol then return false
-
-    // we want a class-class not an object (Module) or a package object (which are both also classes)
-    if !sym.is(Module) && !sym.is(Package) && !sym.isPackageObject then return true
-
-    isAnyAncestorAClass(sym.owner)

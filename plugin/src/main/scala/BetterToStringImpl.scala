@@ -11,6 +11,7 @@ trait CompilerApi {
   type EnclosingObject
 
   def className(clazz: Clazz): String
+  def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean
   def enclosingObjectName(enclosingObject: EnclosingObject): String
   def params(clazz: Clazz): List[Param]
   def literalConstant(value: String): Tree
@@ -65,7 +66,7 @@ object BetterToStringImpl {
 
       private def toStringImpl(clazz: Clazz, enclosingObject: Option[EnclosingObject]): Tree = {
         val className = api.className(clazz)
-        val parentPrefix = enclosingObject.map(p => api.enclosingObjectName(p) ++ ".").getOrElse("")
+        val parentPrefix = enclosingObject.filterNot(api.isPackageOrPackageObject).fold("")(api.enclosingObjectName(_) ++ ".")
 
         val paramListParts: List[Tree] = params(clazz).zipWithIndex.flatMap { case (v, index) =>
           val commaPrefix = if (index > 0) ", " else ""
