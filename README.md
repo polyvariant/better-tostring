@@ -46,11 +46,21 @@ The plugin is currently published for the following Scala versions:
 
 ## Roadmap
 
-- Ignore classes that inherit `toString` from a type that isn't `Object`
-- Add a way of overriding default behavior (blacklisting/whitelisting certain classes) - probably via an annotation in an extra dependency
-- Potentially ignore value classes
+- Ignore classes that inherit `toString` from a type that isn't `Object` (#34)
+- Potentially ignore value classes (#19)
 
-If you have ideas for improving the plugin, feel free to create an issue and I'll consider making it happen :)
+If you have ideas for improving the plugin, feel free to create an issue and we'll consider making it happen :)
+
+## Customization?
+
+_tl;dr there is none._
+
+The plugin makes certain assumptions about what is a _better_ `toString`. We aim for a useful and reasonably verbose description of the data type,
+which could make it easier to find certain issues with your tests (mismatching values in a field) or see the labels in debug logs.
+
+We also want the plugin to become minimal in the implementation and easy to use (plug & play), without lots of configuration options, so the representation of the data types will not be customizable. **The format may change over time without prior notice**, so you shouldn't rely on the exact representation (as is the case with any `toString` methods), but any changes in behavior will be communicated in the release notes.
+
+If you need a different `toString`, we suggest that you implement one yourself. You may also want to look at [pprint](https://github.com/com-lihaoyi/PPrint).
 
 ## Maintainers
 
