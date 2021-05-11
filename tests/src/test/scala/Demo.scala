@@ -35,9 +35,27 @@ class Tests extends AnyWordSpec with Matchers {
     }
   }
 
+  "Class nested in an object" should {
+    "include enclosing object's name" in {
+      ObjectNestedParent.ObjectNestedClass("Joe").toString shouldBe "ObjectNestedParent.ObjectNestedClass(name = Joe)"
+    }
+  }
+
+  "Class nested in a package object" should {
+    "not include package's name" in {
+      pack.InPackageObject("Joe").toString shouldBe "InPackageObject(name = Joe)"
+    }
+  }
+
   "Class nested in another class" should {
     "stringify normally" in {
       new NestedParent().NestedChild("a").toString shouldBe "NestedChild(a)"
+    }
+  }
+
+  "Class nested in an object itself nested in a class" should {
+    "stringify normally" in {
+      new DeeplyNestedInClassGrandparent().DeeplyNestedInClassParent.DeeplyNestedInClassClass("a").toString shouldBe "DeeplyNestedInClassClass(a)"
     }
   }
 
@@ -61,6 +79,16 @@ final case class HasOtherConstructors(s: String) {
 
 final class NestedParent() {
   case class NestedChild(name: String)
+}
+
+object ObjectNestedParent {
+  case class ObjectNestedClass(name: String)
+}
+
+final class DeeplyNestedInClassGrandparent {
+  object DeeplyNestedInClassParent {
+    case class DeeplyNestedInClassClass(name: String)
+  }
 }
 
 object MethodLocalWrapper {

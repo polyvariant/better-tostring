@@ -6,6 +6,7 @@ import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.core.Flags.CaseAccessor
 import dotty.tools.dotc.core.Flags.CaseClass
 import dotty.tools.dotc.core.Flags.Override
+import dotty.tools.dotc.core.Flags.Package
 import dotty.tools.dotc.core.Types
 import dotty.tools.dotc.core.Names
 import dotty.tools.dotc.core.Constants.Constant
@@ -20,6 +21,7 @@ trait Scala3CompilerApi extends CompilerApi:
   type Param = ValDef
   type ParamName = Names.TermName
   type Method = DefDef
+  type EnclosingObject = Symbols.Symbol
 
 object Scala3CompilerApi:
   final case class ClassContext(t: Template, clazz: ClassSymbol):
@@ -33,6 +35,13 @@ object Scala3CompilerApi:
       }
 
     def className(clazz: Clazz): String = clazz.clazz.name.toString
+
+    def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean =
+      enclosingObject.is(Package) || enclosingObject.isPackageObject
+
+    def enclosingObjectName(enclosingObject: EnclosingObject): String =
+      enclosingObject.effectiveName.toString
+
     def literalConstant(value: String): Tree = Literal(Constant(value))
     def paramName(param: Param): ParamName = param.name
     def selectInThis(clazz: Clazz, name: ParamName): Tree = This(clazz.clazz).select(name)

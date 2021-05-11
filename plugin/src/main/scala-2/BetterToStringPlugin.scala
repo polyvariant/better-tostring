@@ -25,18 +25,19 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
   private val impl: BetterToStringImpl[Scala2CompilerApi[global.type]] =
     BetterToStringImpl.instance(Scala2CompilerApi.instance(global))
 
-  private def modifyClasses(tree: Tree): Tree =
+  private def modifyClasses(tree: Tree, enclosingObject: Option[ModuleDef]): Tree =
     tree match {
-      case p: PackageDef   => p.copy(stats = p.stats.map(modifyClasses))
+      case p: PackageDef   => p.copy(stats = p.stats.map(modifyClasses(_, None)))
       case m: ModuleDef    =>
-        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses)))
+        m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, Some(m)))))
       case clazz: ClassDef =>
         impl.transformClass(
           clazz,
           // If it was nested, we wouldn't be in this branch.
           // Scala 2.x compiler API limitation (classes can't tell what the owner is).
           // This should be more optimal as we don't traverse every template, but it hasn't been benchmarked.
-          isNested = false
+          isNested = false,
+          enclosingObject
         )
       case other           => other
     }
@@ -45,7 +46,7 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
 
     override def apply(unit: CompilationUnit): Unit =
       new Transformer {
-        override def transform(tree: Tree): Tree = modifyClasses(tree)
+        override def transform(tree: Tree): Tree = modifyClasses(tree, None)
       }.transformUnit(unit)
 
   }
