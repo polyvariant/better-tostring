@@ -41,6 +41,7 @@ jobs:
           - 3.0.0-RC1
           - 3.0.0-RC2
           - 3.0.0-RC3
+          - 3.0.0
         java: [graalvm-ce-java11@20.3.0]
     runs-on: ${{ matrix.os }}
     steps:
@@ -88,7 +89,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [3.0.0-RC3]
+        scala: [3.0.0]
         java: [graalvm-ce-java11@20.3.0]
     runs-on: ${{ matrix.os }}
     steps:
@@ -240,6 +241,16 @@ jobs:
           name: target-${{ matrix.os }}-3.0.0-RC3-${{ matrix.java }}
 
       - name: Inflate target directories (3.0.0-RC3)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.0.0)
+        uses: actions/download-artifact@v2
+        with:
+          name: target-${{ matrix.os }}-3.0.0-${{ matrix.java }}
+
+      - name: Inflate target directories (3.0.0)
         run: |
           tar xf targets.tar
           rm targets.tar

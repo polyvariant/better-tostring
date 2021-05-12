@@ -27,7 +27,7 @@ val GraalVM11 = "graalvm-ce-java11@20.3.0"
 // for dottydoc
 ThisBuild / resolvers += Resolver.JCenterRepository
 
-ThisBuild / scalaVersion := "3.0.0-RC3"
+ThisBuild / scalaVersion := "3.0.0"
 ThisBuild / crossScalaVersions := Seq(
   "2.12.10",
   "2.12.11",
@@ -43,7 +43,8 @@ ThisBuild / crossScalaVersions := Seq(
   "3.0.0-M3",
   "3.0.0-RC1",
   "3.0.0-RC2",
-  "3.0.0-RC3"
+  "3.0.0-RC3",
+  "3.0.0"
 )
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
@@ -76,6 +77,7 @@ def scalatestVersion(scalaVersion: String) =
     case "3.0.0-M3"  => "3.2.3"
     case "3.0.0-RC1" => "3.2.5"
     case "3.0.0-RC2" => "3.2.7"
+    case "3.0.0"     => "3.2.9" //wishful thinking
     case _           => "3.2.8"
   }
 
