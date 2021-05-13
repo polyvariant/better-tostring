@@ -1,68 +1,78 @@
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import munit.FunSuite
 
-class Tests extends AnyWordSpec with Matchers {
+class Tests extends FunSuite {
 
-  "Simple case class" should {
-    "stringify nicely" in {
+  test("Simple case class stringifies nicely") {
+    assertEquals(
       SimpleCaseClass(
         "Joe",
         23
-      ).toString shouldBe "SimpleCaseClass(name = Joe, age = 23)"
-
-    }
+      ).toString,
+      "SimpleCaseClass(name = Joe, age = 23)"
+    )
   }
 
-  "Case class with multiple parameter lists" should {
-    "only have the first list included" in {
+  test("Case class with multiple parameter lists only has the first list included") {
+    assertEquals(
       MultiParameterList("foo", 20)(
         "s"
-      ).toString shouldBe "MultiParameterList(name = foo, age = 20)"
-    }
+      ).toString,
+      "MultiParameterList(name = foo, age = 20)"
+    )
   }
 
-  "Case class with custom toString" should {
-    "use it" in {
-      CustomTostring("Joe").toString shouldBe "***"
-    }
+  test("Case class with custom toString should not be overridden") {
+    assertEquals(
+      CustomTostring("Joe").toString,
+      "***"
+    )
   }
 
-  "Method with alternate constructors" should {
-    "stringify based on primary constructor" in {
+  test("Method with alternate constructors should stringify based on primary constructor") {
+    assertEquals(
       new HasOtherConstructors(
         10
-      ).toString shouldBe "HasOtherConstructors(s = 10 beers)"
-    }
+      ).toString,
+      "HasOtherConstructors(s = 10 beers)"
+    )
   }
 
-  "Class nested in an object" should {
-    "include enclosing object's name" in {
-      ObjectNestedParent.ObjectNestedClass("Joe").toString shouldBe "ObjectNestedParent.ObjectNestedClass(name = Joe)"
-    }
+  test("Class nested in an object should include enclosing object's name") {
+    assertEquals(
+      ObjectNestedParent.ObjectNestedClass("Joe").toString,
+      "ObjectNestedParent.ObjectNestedClass(name = Joe)"
+    )
   }
 
-  "Class nested in a package object" should {
-    "not include package's name" in {
-      pack.InPackageObject("Joe").toString shouldBe "InPackageObject(name = Joe)"
-    }
+  test("Class nested in a package object should not include package's name") {
+    assertEquals(
+      pack.InPackageObject("Joe").toString,
+      "InPackageObject(name = Joe)"
+    )
   }
 
-  "Class nested in another class" should {
-    "stringify normally" in {
-      new NestedParent().NestedChild("a").toString shouldBe "NestedChild(a)"
-    }
+  test("Class nested in another class should stringify normally") {
+    assertEquals(
+      new NestedParent().NestedChild("a").toString,
+      "NestedChild(a)"
+    )
   }
 
-  "Class nested in an object itself nested in a class" should {
-    "stringify normally" in {
-      new DeeplyNestedInClassGrandparent().DeeplyNestedInClassParent.DeeplyNestedInClassClass("a").toString shouldBe "DeeplyNestedInClassClass(a)"
-    }
+  test("Class nested in an object itself nested in a class should stringify normally") {
+    assertEquals(
+      new DeeplyNestedInClassGrandparent()
+        .DeeplyNestedInClassParent
+        .DeeplyNestedInClassClass("a")
+        .toString,
+      "DeeplyNestedInClassClass(a)"
+    )
   }
 
-  "Method-local class" should {
-    "stringify normally" in {
-      MethodLocalWrapper.methodLocalClassStringify shouldBe "LocalClass(a)"
-    }
+  test("Method-local class should stringify normally") {
+    assertEquals(
+      MethodLocalWrapper.methodLocalClassStringify,
+      "LocalClass(a)"
+    )
   }
 }
 
@@ -86,9 +96,11 @@ object ObjectNestedParent {
 }
 
 final class DeeplyNestedInClassGrandparent {
+
   object DeeplyNestedInClassParent {
     case class DeeplyNestedInClassClass(name: String)
   }
+
 }
 
 object MethodLocalWrapper {
