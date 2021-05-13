@@ -99,7 +99,12 @@ val tests = project.settings(
     ) //borrowed from bm4
   },
   libraryDependencies ++= Seq(
-    "org.scalameta" %% "munit" % "0.7.26" % Test
+    "org.scalameta" %% "munit" % (scalaVersion.value match {
+      case "3.0.0-M3"  => "0.7.22"
+      case "3.0.0-RC1" => "0.7.23"
+      case "3.0.0-RC2" => "0.7.25"
+      case _           => "0.7.26"
+    }) % Test
   )
 )
 
