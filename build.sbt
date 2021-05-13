@@ -88,7 +88,8 @@ val plugin = project.settings(
   crossVersion := CrossVersion.full,
   libraryDependencies ++= Seq(
     scalaOrganization.value % (
-      if (scalaVersion.value.startsWith("3"))
+      if (scalaVersion.value == "3.0.0") "scala3-compiler_3"
+      else if (scalaVersion.value.startsWith("3"))
         s"scala3-compiler_${scalaVersion.value}"
       else "scala-compiler"
     ) % scalaVersion.value
