@@ -27,7 +27,7 @@ val GraalVM11 = "graalvm-ce-java11@20.3.0"
 // for dottydoc
 ThisBuild / resolvers += Resolver.JCenterRepository
 
-ThisBuild / scalaVersion := "3.0.0-RC3"
+ThisBuild / scalaVersion := "3.0.0"
 ThisBuild / crossScalaVersions := Seq(
   "2.12.10",
   "2.12.11",
@@ -43,7 +43,8 @@ ThisBuild / crossScalaVersions := Seq(
   "3.0.0-M3",
   "3.0.0-RC1",
   "3.0.0-RC2",
-  "3.0.0-RC3"
+  "3.0.0-RC3",
+  "3.0.0"
 )
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
@@ -71,14 +72,6 @@ val commonSettings = Seq(
   scalacOptions -= "-Xfatal-warnings"
 )
 
-def scalatestVersion(scalaVersion: String) =
-  scalaVersion match {
-    case "3.0.0-M3"  => "3.2.3"
-    case "3.0.0-RC1" => "3.2.5"
-    case "3.0.0-RC2" => "3.2.7"
-    case _           => "3.2.8"
-  }
-
 val plugin = project.settings(
   name := "better-tostring",
   commonSettings,
@@ -86,7 +79,8 @@ val plugin = project.settings(
   crossVersion := CrossVersion.full,
   libraryDependencies ++= Seq(
     scalaOrganization.value % (
-      if (scalaVersion.value.startsWith("3"))
+      if (scalaVersion.value == "3.0.0") "scala3-compiler_3"
+      else if (scalaVersion.value.startsWith("3"))
         s"scala3-compiler_${scalaVersion.value}"
       else "scala-compiler"
     ) % scalaVersion.value
@@ -105,7 +99,12 @@ val tests = project.settings(
     ) //borrowed from bm4
   },
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % scalatestVersion(scalaVersion.value) % Test
+    "org.scalameta" %% "munit" % (scalaVersion.value match {
+      case "3.0.0-M3"  => "0.7.22"
+      case "3.0.0-RC1" => "0.7.23"
+      case "3.0.0-RC2" => "0.7.25"
+      case _           => "0.7.26"
+    }) % Test
   )
 )
 
