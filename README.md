@@ -68,3 +68,9 @@ The maintainers of this project (people who can merge PRs and make releases) are
 - Jakub Kozłowski ([@kubukoz](https://github.com/kubukoz))
 - Michał Pawlik ([@majk-p](https://github.com/majk-p))
 - Mikołaj Robakowski ([@mrobakowski](https://github.com/mrobakowski))
+
+## Community
+
+This project supports the [Scala code of conduct](https://www.scala-lang.org/conduct/) and wants communication on all its channels (GitHub etc.) to be inclusive environments.
+
+If you have any concerns about someone's behavior on these channels, contact [Jakub Kozłowski](mailto:kubukoz@gmail.com).
