@@ -29,22 +29,14 @@ ThisBuild / resolvers += Resolver.JCenterRepository
 
 ThisBuild / scalaVersion := "3.0.0"
 ThisBuild / crossScalaVersions := Seq(
-  "2.12.10",
   "2.12.11",
   "2.12.12",
   "2.12.13",
   //
-  "2.13.1",
-  "2.13.2",
-  "2.13.3",
   "2.13.4",
   "2.13.5",
   "2.13.6",
   //
-  "3.0.0-M3",
-  "3.0.0-RC1",
-  "3.0.0-RC2",
-  "3.0.0-RC3",
   "3.0.0"
 )
 
@@ -80,9 +72,8 @@ val plugin = project.settings(
   crossVersion := CrossVersion.full,
   libraryDependencies ++= Seq(
     scalaOrganization.value % (
-      if (scalaVersion.value == "3.0.0") "scala3-compiler_3"
-      else if (scalaVersion.value.startsWith("3"))
-        s"scala3-compiler_${scalaVersion.value}"
+      if (scalaVersion.value.startsWith("3"))
+        s"scala3-compiler_3"
       else "scala-compiler"
     ) % scalaVersion.value
   )
