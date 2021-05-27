@@ -5,7 +5,7 @@ import scala.tools.nsc.Global
 
 trait Scala2CompilerApi[G <: Global] extends CompilerApi {
   val theGlobal: G
-  import theGlobal.*
+  import theGlobal._
   type Tree = theGlobal.Tree
   type Clazz = ClassDef
   type Param = ValDef
@@ -19,7 +19,7 @@ object Scala2CompilerApi {
   def instance(global: Global): Scala2CompilerApi[global.type] =
     new Scala2CompilerApi[global.type] {
       val theGlobal: global.type = global
-      import global.*
+      import global._
 
       def params(clazz: Clazz): List[Param] = clazz.impl.body.collect {
         case v: ValDef if v.mods.hasFlag(Flags.CASEACCESSOR) => v

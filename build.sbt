@@ -62,7 +62,7 @@ ThisBuild / githubWorkflowEnv ++= List(
 }.toMap
 
 val commonSettings = Seq(
-  scalacOptions -= "-Xfatal-warnings"
+  scalacOptions --= Seq("-Xfatal-warnings", "-source", "future")
 )
 
 val plugin = project.settings(
