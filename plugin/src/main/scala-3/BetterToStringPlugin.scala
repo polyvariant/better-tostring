@@ -8,7 +8,7 @@ import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.plugins.PluginPhase
 import dotty.tools.dotc.plugins.StandardPlugin
 import dotty.tools.dotc.typer.FrontEnd
-import tpd._
+import tpd.*
 
 import scala.annotation.tailrec
 

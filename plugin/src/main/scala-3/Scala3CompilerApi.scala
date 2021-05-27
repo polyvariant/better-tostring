@@ -11,9 +11,9 @@ import dotty.tools.dotc.core.Types
 import dotty.tools.dotc.core.Names
 import dotty.tools.dotc.core.Constants.Constant
 import dotty.tools.dotc.core.Symbols.ClassSymbol
-import dotty.tools.dotc.core.Decorators._
+import dotty.tools.dotc.core.Decorators.*
 import dotty.tools.dotc.ast.Trees
-import tpd._
+import tpd.*
 
 trait Scala3CompilerApi extends CompilerApi:
   type Tree = Trees.Tree[Types.Type]
