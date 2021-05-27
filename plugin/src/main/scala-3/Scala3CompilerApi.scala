@@ -73,3 +73,5 @@ object Scala3CompilerApi:
     }
 
     def isCaseClass(clazz: Clazz): Boolean = clazz.clazz.flags.is(CaseClass)
+
+end Scala3CompilerApi
