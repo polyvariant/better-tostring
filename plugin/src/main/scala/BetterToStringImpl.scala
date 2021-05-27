@@ -45,7 +45,7 @@ object BetterToStringImpl {
     new BetterToStringImpl[api.type] {
       val compilerApi: api.type = api
 
-      import api._
+      import api.*
 
       def transformClass(
         clazz: Clazz,

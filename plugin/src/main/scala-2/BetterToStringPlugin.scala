@@ -18,7 +18,7 @@ final class BetterToStringPlugin(override val global: Global) extends Plugin {
 }
 
 final class BetterToStringPluginComponent(val global: Global) extends PluginComponent with TypingTransformers {
-  import global._
+  import global.*
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: List[String] = List("parser")
 
