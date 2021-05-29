@@ -2,9 +2,9 @@ pull_request_rules:
   - name: automatically merge Scala Steward PRs on CI success
     conditions:
       - author=scala-steward
-      - status-success="Build and Test (ubuntu-latest, 2.12.11, graalvm-ce-java11@20.3.0)"
       - status-success="Build and Test (ubuntu-latest, 2.12.12, graalvm-ce-java11@20.3.0)"
       - status-success="Build and Test (ubuntu-latest, 2.12.13, graalvm-ce-java11@20.3.0)"
+      - status-success="Build and Test (ubuntu-latest, 2.12.14, graalvm-ce-java11@20.3.0)"
       - status-success="Build and Test (ubuntu-latest, 2.13.4, graalvm-ce-java11@20.3.0)"
       - status-success="Build and Test (ubuntu-latest, 2.13.5, graalvm-ce-java11@20.3.0)"
       - status-success="Build and Test (ubuntu-latest, 2.13.6, graalvm-ce-java11@20.3.0)"
