@@ -74,6 +74,23 @@ class Tests extends FunSuite {
       "LocalClass(a)"
     )
   }
+
+  test("Lone case object should use the default toString") {
+    assertEquals(CaseObject.toString, "CaseObject")
+  }
+
+  test("Case object with toString should not get extra toString") {
+    assertEquals(
+      CaseObjectWithToString.toString,
+      "example"
+    )
+  }
+}
+
+case object CaseObject
+
+case object CaseObjectWithToString {
+  override val toString: String = "example"
 }
 
 final case class SimpleCaseClass(name: String, age: Int)
