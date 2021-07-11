@@ -5,6 +5,7 @@ import dotty.tools.dotc.core.Contexts.Context
 import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.core.Flags.CaseAccessor
 import dotty.tools.dotc.core.Flags.CaseClass
+import dotty.tools.dotc.core.Flags.Module
 import dotty.tools.dotc.core.Flags.Override
 import dotty.tools.dotc.core.Flags.Package
 import dotty.tools.dotc.core.Types
@@ -72,6 +73,11 @@ object Scala3CompilerApi:
       d.name.toString
     }
 
-    def isCaseClass(clazz: Clazz): Boolean = clazz.clazz.flags.is(CaseClass)
+    def isCaseClass(clazz: Clazz): Boolean = {
+      // for some reason, this is true for case objects too
+      // hence the additional check for not being a module (object)
+      clazz.clazz.flags.is(CaseClass) &&
+        !clazz.clazz.flags.is(Module)
+    }
 
 end Scala3CompilerApi
