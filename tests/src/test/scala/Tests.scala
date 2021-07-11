@@ -1,5 +1,4 @@
 import munit.FunSuite
-import scala.runtime.ScalaRunTime
 import munit.TestOptions
 import b2s.buildinfo.BuildInfo
 
@@ -53,7 +52,8 @@ class Tests extends FunSuite {
     )
   }
 
-  test("Case object nested in an object should include enclosing object's name") {
+  // https://github.com/polyvariant/better-tostring/issues/59
+  test(onlyScala3("Case object nested in an object should include enclosing object's name")) {
     assertEquals(
       ObjectNestedParent.ObjectNestedObject.toString,
       "ObjectNestedParent.ObjectNestedObject"
@@ -102,19 +102,18 @@ class Tests extends FunSuite {
     )
   }
 
-  // https://github.com/polyvariant/better-tostring/issues/59
-  // On scala 2, this is expected to fail.
-  test {
-    val name = "Case object with toString val should not get extra toString"
-
-    val isScala3 = BuildInfo.scalaVersion.startsWith("3")
-    if (isScala3) name: TestOptions else name.fail
-  } {
+  test("Case object with toString val should not get extra toString") {
     assertEquals(
       CaseObjectWithToStringVal.toString,
       "example"
     )
   }
+
+  def onlyScala3(name: String) = {
+    val isScala3 = BuildInfo.scalaVersion.startsWith("3")
+    if (isScala3) name: TestOptions else name.fail
+  }
+
 }
 
 case object CaseObject
