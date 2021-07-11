@@ -82,9 +82,6 @@ object Scala3CompilerApi:
       // for some reason, this is true for case objects too
       clazz.clazz.flags.is(CaseClass)
 
-    def isEnum(clazz: Clazz): Boolean =
-      clazz.clazz.isSubClass(Symbols.requiredClass("scala.runtime.EnumValue"))
-
     def isObject(clazz: Clazz): Boolean =
       clazz.clazz.flags.is(Module)
 

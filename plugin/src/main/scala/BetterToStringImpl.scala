@@ -24,7 +24,6 @@ trait CompilerApi {
   def addMethod(clazz: Clazz, method: Method): Clazz
   def methodNames(clazz: Clazz): List[String]
   def isCaseClass(clazz: Clazz): Boolean
-  def isEnum(clazz: Clazz): Boolean
   def isObject(clazz: Clazz): Boolean
 }
 

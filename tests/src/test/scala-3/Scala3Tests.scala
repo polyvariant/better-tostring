@@ -4,11 +4,11 @@ class Scala3Tests extends FunSuite:
   test("an enum made of constants should have a normal toString") {
     assertEquals(
       ScalaVersion.Scala2.toString,
-      "ScalaVersion.Scala2"
+      "Scala2"
     )
     assertEquals(
       ScalaVersion.Scala3.toString,
-      "ScalaVersion.Scala3"
+      "Scala3"
     )
   }
 
@@ -16,11 +16,6 @@ class Scala3Tests extends FunSuite:
     assertEquals(
       User.LoggedIn("admin").toString,
       "User.LoggedIn(name = admin)"
-    )
-
-    assertEquals(
-      User.Unauthorized.toString,
-      "User.Unauthorized"
     )
   }
 
