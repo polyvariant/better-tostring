@@ -55,7 +55,7 @@ object BetterToStringImpl {
       ): Clazz = {
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
-        val shouldModify = (isCaseClass(clazz) && !isNested) && !hasToString
+        val shouldModify = isCaseClass(clazz) && !isNested && !hasToString
 
         if (shouldModify) overrideToString(clazz, enclosingObject)
         else clazz
