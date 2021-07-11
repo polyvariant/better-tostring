@@ -1,4 +1,7 @@
 import munit.FunSuite
+import scala.runtime.ScalaRunTime
+import munit.TestOptions
+import b2s.buildinfo.BuildInfo
 
 class Tests extends FunSuite {
 
@@ -43,10 +46,17 @@ class Tests extends FunSuite {
     )
   }
 
-  test("Class nested in an object should include enclosing object's name") {
+  test("Case class nested in an object should include enclosing object's name") {
     assertEquals(
       ObjectNestedParent.ObjectNestedClass("Joe").toString,
       "ObjectNestedParent.ObjectNestedClass(name = Joe)"
+    )
+  }
+
+  test("Case object nested in an object should include enclosing object's name") {
+    assertEquals(
+      ObjectNestedParent.ObjectNestedObject.toString,
+      "ObjectNestedParent.ObjectNestedObject"
     )
   }
 
@@ -92,7 +102,14 @@ class Tests extends FunSuite {
     )
   }
 
-  test("Case object with toString val should not get extra toString") {
+  // https://github.com/polyvariant/better-tostring/issues/59
+  // On scala 2, this is expected to fail.
+  test {
+    val name = "Case object with toString val should not get extra toString"
+
+    val isScala3 = BuildInfo.scalaVersion.startsWith("3")
+    if (isScala3) name: TestOptions else name.fail
+  } {
     assertEquals(
       CaseObjectWithToStringVal.toString,
       "example"
@@ -105,6 +122,7 @@ case object CaseObject
 case object CaseObjectWithToString {
   override def toString: String = "example"
 }
+
 case object CaseObjectWithToStringVal {
   override val toString: String = "example"
 }
@@ -115,6 +133,7 @@ final case class MultiParameterList(name: String, age: Int)(val s: String)
 final case class CustomTostring(name: String) {
   override def toString: String = "***"
 }
+
 final case class CustomTostringVal(name: String) {
   override val toString: String = "***"
 }
@@ -129,6 +148,7 @@ final class NestedParent() {
 
 object ObjectNestedParent {
   case class ObjectNestedClass(name: String)
+  case object ObjectNestedObject
 }
 
 final class DeeplyNestedInClassGrandparent {

@@ -97,8 +97,10 @@ val tests = project.settings(
       case "3.0.0-RC2" => "0.7.25"
       case _           => "0.7.26"
     }) % Test
-  )
-)
+  ),
+  buildInfoKeys ++= Seq(scalaVersion),
+  buildInfoPackage := "b2s.buildinfo"
+).enablePlugins(BuildInfoPlugin)
 
 val betterToString =
   project

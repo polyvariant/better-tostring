@@ -55,6 +55,7 @@ object Scala2CompilerApi {
       }
 
       def isCaseClass(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.CASE)
+      def isEnum(clazz: Clazz): Boolean = false //enums don't exist in Scala 2
       def isObject(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.MODULE)
     }
 

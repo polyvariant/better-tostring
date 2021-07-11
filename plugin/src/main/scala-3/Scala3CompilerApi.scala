@@ -1,19 +1,21 @@
 package com.kubukoz
 
+import dotty.tools.dotc.ast.Trees
 import dotty.tools.dotc.ast.tpd
+import dotty.tools.dotc.core.Constants.Constant
 import dotty.tools.dotc.core.Contexts.Context
-import dotty.tools.dotc.core.Symbols
+import dotty.tools.dotc.core.Decorators.*
+import dotty.tools.dotc.core.Flags
 import dotty.tools.dotc.core.Flags.CaseAccessor
 import dotty.tools.dotc.core.Flags.CaseClass
 import dotty.tools.dotc.core.Flags.Module
 import dotty.tools.dotc.core.Flags.Override
 import dotty.tools.dotc.core.Flags.Package
-import dotty.tools.dotc.core.Types
 import dotty.tools.dotc.core.Names
-import dotty.tools.dotc.core.Constants.Constant
+import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.core.Symbols.ClassSymbol
-import dotty.tools.dotc.core.Decorators.*
-import dotty.tools.dotc.ast.Trees
+import dotty.tools.dotc.core.Types
+
 import tpd.*
 
 trait Scala3CompilerApi extends CompilerApi:
@@ -78,9 +80,12 @@ object Scala3CompilerApi:
 
     def isCaseClass(clazz: Clazz): Boolean =
       // for some reason, this is true for case objects too
-      // hence the additional check for not being a module (object)
       clazz.clazz.flags.is(CaseClass)
 
-    def isObject(clazz: Clazz): Boolean = clazz.clazz.flags.is(Module)
+    def isEnum(clazz: Clazz): Boolean =
+      clazz.clazz.isSubClass(Symbols.requiredClass("scala.runtime.EnumValue"))
+
+    def isObject(clazz: Clazz): Boolean =
+      clazz.clazz.flags.is(Module)
 
 end Scala3CompilerApi

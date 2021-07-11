@@ -24,6 +24,7 @@ trait CompilerApi {
   def addMethod(clazz: Clazz, method: Method): Clazz
   def methodNames(clazz: Clazz): List[String]
   def isCaseClass(clazz: Clazz): Boolean
+  def isEnum(clazz: Clazz): Boolean
   def isObject(clazz: Clazz): Boolean
 }
 
@@ -55,8 +56,7 @@ object BetterToStringImpl {
       ): Clazz = {
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
-        val shouldModify =
-          isCaseClass(clazz) && !isNested && !hasToString
+        val shouldModify = (isCaseClass(clazz) && !isNested) && !hasToString
 
         if (shouldModify) overrideToString(clazz, enclosingObject)
         else clazz
@@ -83,13 +83,13 @@ object BetterToStringImpl {
         }
 
         val paramParts =
-          if (api.isCaseClass(clazz) && !api.isObject(clazz))
+          if (api.isObject(clazz)) Nil
+          else
             List(
               List(literalConstant("(")),
               paramListParts,
               List(literalConstant(")"))
             ).flatten
-          else Nil
 
         val parts =
           namePart :: paramParts
