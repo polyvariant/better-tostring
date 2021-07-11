@@ -27,6 +27,12 @@ class Tests extends FunSuite {
       "***"
     )
   }
+  test("Case class with custom toString val should not be overridden") {
+    assertEquals(
+      CustomTostringVal("Joe").toString,
+      "***"
+    )
+  }
 
   test("Method with alternate constructors should stringify based on primary constructor") {
     assertEquals(
@@ -85,11 +91,21 @@ class Tests extends FunSuite {
       "example"
     )
   }
+
+  test("Case object with toString val should not get extra toString") {
+    assertEquals(
+      CaseObjectWithToStringVal.toString,
+      "example"
+    )
+  }
 }
 
 case object CaseObject
 
 case object CaseObjectWithToString {
+  override def toString: String = "example"
+}
+case object CaseObjectWithToStringVal {
   override val toString: String = "example"
 }
 
@@ -98,6 +114,9 @@ final case class MultiParameterList(name: String, age: Int)(val s: String)
 
 final case class CustomTostring(name: String) {
   override def toString: String = "***"
+}
+final case class CustomTostringVal(name: String) {
+  override val toString: String = "***"
 }
 
 final case class HasOtherConstructors(s: String) {

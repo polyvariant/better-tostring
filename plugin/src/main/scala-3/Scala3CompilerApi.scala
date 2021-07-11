@@ -35,7 +35,8 @@ object Scala3CompilerApi:
         case v: ValDef if v.mods.is(CaseAccessor) => v
       }
 
-    def className(clazz: Clazz): String = clazz.clazz.name.toString
+    def className(clazz: Clazz): String =
+      clazz.clazz.originalName.toString
 
     def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean =
       enclosingObject.is(Package) || enclosingObject.isPackageObject
@@ -69,15 +70,17 @@ object Scala3CompilerApi:
     def addMethod(clazz: Clazz, method: Method): Clazz =
       clazz.mapTemplate(t => cpy.Template(t)(body = t.body :+ method))
 
-    def methodNames(clazz: Clazz): List[String] = clazz.t.body.collect { case d: DefDef =>
-      d.name.toString
-    }
+    // note: also returns vals because why not
+    def methodNames(clazz: Clazz): List[String] =
+      clazz.t.body.collect { case d: (DefDef | ValDef) =>
+        d.name.toString
+      }
 
-    def isCaseClass(clazz: Clazz): Boolean = {
+    def isCaseClass(clazz: Clazz): Boolean =
       // for some reason, this is true for case objects too
       // hence the additional check for not being a module (object)
-      clazz.clazz.flags.is(CaseClass) &&
-        !clazz.clazz.flags.is(Module)
-    }
+      clazz.clazz.flags.is(CaseClass)
+
+    def isObject(clazz: Clazz): Boolean = clazz.clazz.flags.is(Module)
 
 end Scala3CompilerApi
