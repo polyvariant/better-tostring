@@ -32,9 +32,9 @@ libraryDependencies += compilerPlugin("com.kubukoz" % "better-tostring" % versio
 
 The plugin is currently published for the following Scala versions:
 
-- 2.12.11, 2.12.12, 2.12.13
+- 2.12.12, 2.12.13, 2.12.14
 - 2.13.4, 2.13.5, 2.13.6
-- 3.0.0
+- 3.0.0, 3.0.1
 
 For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/com/kubukoz).
 
