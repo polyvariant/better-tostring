@@ -49,11 +49,13 @@ object Scala2CompilerApi {
       def addMethod(clazz: Clazz, method: Method): Clazz =
         clazz.copy(impl = clazz.impl.copy(body = clazz.impl.body :+ method))
 
-      def methodNames(clazz: Clazz): List[String] = clazz.impl.body.collect { case d: DefDef =>
-        d.name.toString
+      def methodNames(clazz: Clazz): List[String] = clazz.impl.body.collect {
+        case d: DefDef => d.name.toString
+        case d: ValDef => d.name.toString
       }
 
       def isCaseClass(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.CASE)
+      def isObject(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.MODULE)
     }
 
 }

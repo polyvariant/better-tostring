@@ -1,4 +1,6 @@
 import munit.FunSuite
+import munit.TestOptions
+import b2s.buildinfo.BuildInfo
 
 class Tests extends FunSuite {
 
@@ -27,6 +29,12 @@ class Tests extends FunSuite {
       "***"
     )
   }
+  test("Case class with custom toString val should not be overridden") {
+    assertEquals(
+      CustomTostringVal("Joe").toString,
+      "***"
+    )
+  }
 
   test("Method with alternate constructors should stringify based on primary constructor") {
     assertEquals(
@@ -37,10 +45,18 @@ class Tests extends FunSuite {
     )
   }
 
-  test("Class nested in an object should include enclosing object's name") {
+  test("Case class nested in an object should include enclosing object's name") {
     assertEquals(
       ObjectNestedParent.ObjectNestedClass("Joe").toString,
       "ObjectNestedParent.ObjectNestedClass(name = Joe)"
+    )
+  }
+
+  // https://github.com/polyvariant/better-tostring/issues/59
+  test(onlyScala3("Case object nested in an object should include enclosing object's name")) {
+    assertEquals(
+      ObjectNestedParent.ObjectNestedObject.toString,
+      "ObjectNestedParent.ObjectNestedObject"
     )
   }
 
@@ -74,6 +90,40 @@ class Tests extends FunSuite {
       "LocalClass(a)"
     )
   }
+
+  test("Lone case object should use the default toString") {
+    assertEquals(CaseObject.toString, "CaseObject")
+  }
+
+  test("Case object with toString should not get extra toString") {
+    assertEquals(
+      CaseObjectWithToString.toString,
+      "example"
+    )
+  }
+
+  test("Case object with toString val should not get extra toString") {
+    assertEquals(
+      CaseObjectWithToStringVal.toString,
+      "example"
+    )
+  }
+
+  def onlyScala3(name: String) = {
+    val isScala3 = BuildInfo.scalaVersion.startsWith("3")
+    if (isScala3) name: TestOptions else name.fail
+  }
+
+}
+
+case object CaseObject
+
+case object CaseObjectWithToString {
+  override def toString: String = "example"
+}
+
+case object CaseObjectWithToStringVal {
+  override val toString: String = "example"
 }
 
 final case class SimpleCaseClass(name: String, age: Int)
@@ -81,6 +131,10 @@ final case class MultiParameterList(name: String, age: Int)(val s: String)
 
 final case class CustomTostring(name: String) {
   override def toString: String = "***"
+}
+
+final case class CustomTostringVal(name: String) {
+  override val toString: String = "***"
 }
 
 final case class HasOtherConstructors(s: String) {
@@ -93,6 +147,7 @@ final class NestedParent() {
 
 object ObjectNestedParent {
   case class ObjectNestedClass(name: String)
+  case object ObjectNestedObject
 }
 
 final class DeeplyNestedInClassGrandparent {

@@ -1,18 +1,21 @@
 package com.kubukoz
 
+import dotty.tools.dotc.ast.Trees
 import dotty.tools.dotc.ast.tpd
+import dotty.tools.dotc.core.Constants.Constant
 import dotty.tools.dotc.core.Contexts.Context
-import dotty.tools.dotc.core.Symbols
+import dotty.tools.dotc.core.Decorators.*
+import dotty.tools.dotc.core.Flags
 import dotty.tools.dotc.core.Flags.CaseAccessor
 import dotty.tools.dotc.core.Flags.CaseClass
+import dotty.tools.dotc.core.Flags.Module
 import dotty.tools.dotc.core.Flags.Override
 import dotty.tools.dotc.core.Flags.Package
-import dotty.tools.dotc.core.Types
 import dotty.tools.dotc.core.Names
-import dotty.tools.dotc.core.Constants.Constant
+import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.core.Symbols.ClassSymbol
-import dotty.tools.dotc.core.Decorators.*
-import dotty.tools.dotc.ast.Trees
+import dotty.tools.dotc.core.Types
+
 import tpd.*
 
 trait Scala3CompilerApi extends CompilerApi:
@@ -34,7 +37,8 @@ object Scala3CompilerApi:
         case v: ValDef if v.mods.is(CaseAccessor) => v
       }
 
-    def className(clazz: Clazz): String = clazz.clazz.name.toString
+    def className(clazz: Clazz): String =
+      clazz.clazz.originalName.toString
 
     def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean =
       enclosingObject.is(Package) || enclosingObject.isPackageObject
@@ -68,10 +72,17 @@ object Scala3CompilerApi:
     def addMethod(clazz: Clazz, method: Method): Clazz =
       clazz.mapTemplate(t => cpy.Template(t)(body = t.body :+ method))
 
-    def methodNames(clazz: Clazz): List[String] = clazz.t.body.collect { case d: DefDef =>
-      d.name.toString
-    }
+    // note: also returns vals because why not
+    def methodNames(clazz: Clazz): List[String] =
+      clazz.t.body.collect { case d: (DefDef | ValDef) =>
+        d.name.toString
+      }
 
-    def isCaseClass(clazz: Clazz): Boolean = clazz.clazz.flags.is(CaseClass)
+    def isCaseClass(clazz: Clazz): Boolean =
+      // for some reason, this is true for case objects too
+      clazz.clazz.flags.is(CaseClass)
+
+    def isObject(clazz: Clazz): Boolean =
+      clazz.clazz.flags.is(Module)
 
 end Scala3CompilerApi

@@ -8,9 +8,10 @@ import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.plugins.PluginPhase
 import dotty.tools.dotc.plugins.StandardPlugin
 import dotty.tools.dotc.typer.FrontEnd
-import tpd.*
 
 import scala.annotation.tailrec
+
+import tpd.*
 
 final class BetterToStringPlugin extends StandardPlugin:
   override val name: String = "better-tostring"
