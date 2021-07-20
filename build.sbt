@@ -27,7 +27,7 @@ val GraalVM11 = "graalvm-ce-java11@20.3.0"
 // for dottydoc
 ThisBuild / resolvers += Resolver.JCenterRepository
 
-ThisBuild / scalaVersion := "2.13.6"
+ThisBuild / scalaVersion := "3.0.0"
 ThisBuild / crossScalaVersions := Seq(
   "2.12.12",
   "2.12.13",

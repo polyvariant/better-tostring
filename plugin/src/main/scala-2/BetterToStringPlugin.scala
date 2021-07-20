@@ -22,8 +22,8 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: List[String] = List("parser")
 
-  private val impl: BetterToStringImpl[Scala2CompilerApi[global.type]] =
-    BetterToStringImpl.instance(Scala2CompilerApi.instance(global))
+  private val api: Scala2CompilerApi[global.type] = Scala2CompilerApi.instance(global)
+  private val impl = BetterToStringImpl.instance(api)
 
   private def modifyClasses(tree: Tree, enclosingObject: Option[ModuleDef]): Tree =
     tree match {
@@ -33,19 +33,20 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
       // We might need to change the type of CompilerApi#Clazz to allow objects.
       case m: ModuleDef if m.mods.isCase =>
         //isNested=false for the same reason as in the ClassDef case
-        impl.transformClass(Right(m), isNested = false, enclosingObject).merge
+        impl.transformClass(api.Classable.Obj(m), isNested = false, enclosingObject).merge
       case m: ModuleDef                  =>
         m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, Some(m)))))
       case clazz: ClassDef               =>
-        impl.transformClass(
-          //todo either -> adt
-          Left(clazz),
-          // If it was nested, we wouldn't be in this branch.
-          // Scala 2.x compiler API limitation (classes can't tell what the owner is).
-          // This should be more optimal as we don't traverse every template, but it hasn't been benchmarked.
-          isNested = false,
-          enclosingObject
-        ).merge
+        impl
+          .transformClass(
+            api.Classable.Clazz(clazz),
+            // If it was nested, we wouldn't be in this branch.
+            // Scala 2.x compiler API limitation (classes can't tell what the owner is).
+            // This should be more optimal as we don't traverse every template, but it hasn't been benchmarked.
+            isNested = false,
+            enclosingObject
+          )
+          .merge
       case other                         => other
     }
 

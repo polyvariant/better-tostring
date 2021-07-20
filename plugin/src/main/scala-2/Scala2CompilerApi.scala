@@ -6,8 +6,36 @@ import scala.tools.nsc.Global
 trait Scala2CompilerApi[G <: Global] extends CompilerApi {
   val theGlobal: G
   import theGlobal._
+
+  sealed trait Classable extends Product with Serializable {
+
+    def bimap(
+      clazz: ClassDef => ClassDef,
+      obj: ModuleDef => ModuleDef
+    ): Classable = this match {
+      case Classable.Clazz(c) => Classable.Clazz(clazz(c))
+      case Classable.Obj(o)   => Classable.Obj(obj(o))
+    }
+
+    def fold[A](
+      clazz: ClassDef => A,
+      obj: ModuleDef => A
+    ): A = this match {
+      case Classable.Clazz(c) => clazz(c)
+      case Classable.Obj(o)   => obj(o)
+    }
+
+    def merge: ImplDef = fold(identity, identity)
+
+  }
+
+  object Classable {
+    case class Clazz(c: ClassDef) extends Classable
+    case class Obj(o: ModuleDef) extends Classable
+  }
+
   type Tree = theGlobal.Tree
-  type Clazz = Either[ClassDef, ModuleDef]
+  type Clazz = Classable
   type Param = ValDef
   type ParamName = TermName
   type Method = DefDef
@@ -21,13 +49,12 @@ object Scala2CompilerApi {
       val theGlobal: global.type = global
       import global._
 
-      def params(clazz: Clazz): List[Param] = clazz match {
-        case Left(clazz) =>
-          clazz.impl.body.collect {
-            case v: ValDef if v.mods.isCaseAccessor => v
-          }
-        case Right(_)    => Nil
-      }
+      def params(clazz: Clazz): List[Param] = clazz.fold(
+        clazz = _.impl.body.collect {
+          case v: ValDef if v.mods.isCaseAccessor => v
+        },
+        obj = _ => Nil
+      )
 
       def className(clazz: Clazz): String = clazz.merge.name.toString
 
@@ -52,14 +79,10 @@ object Scala2CompilerApi {
 
       def addMethod(clazz: Clazz, method: Method): Clazz = {
         val newBody = clazz.merge.impl.copy(body = clazz.merge.impl.body :+ method)
-        clazz
-          .left
-          .map {
-            _.copy(impl = newBody)
-          }
-          .map {
-            _.copy(impl = newBody)
-          }
+        clazz.bimap(
+          clazz = _.copy(impl = newBody),
+          obj = _.copy(impl = newBody)
+        )
       }
 
       def methodNames(clazz: Clazz): List[String] = clazz.merge.impl.body.collect {
@@ -68,8 +91,13 @@ object Scala2CompilerApi {
       }
 
       def isCaseClass(clazz: Clazz): Boolean = clazz.merge.mods.isCase
+
       // Always return true for ModuleDef - apparently ModuleDef doesn't have the module flag...
-      def isObject(clazz: Clazz): Boolean = clazz.fold(_.mods.hasModuleFlag, _ => true)
+      def isObject(clazz: Clazz): Boolean = clazz.fold(
+        clazz = _.mods.hasModuleFlag,
+        obj = _ => true
+      )
+
     }
 
 }
