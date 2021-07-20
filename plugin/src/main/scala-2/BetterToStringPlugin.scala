@@ -27,13 +27,16 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
 
   private def modifyClasses(tree: Tree, enclosingObject: Option[ModuleDef]): Tree =
     tree match {
-      case p: PackageDef                 => p.copy(stats = p.stats.map(modifyClasses(_, None)))
+      case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(_, None)))
+
       case m: ModuleDef if m.mods.isCase =>
         // isNested=false for the same reason as in the ClassDef case
         impl.transformClass(api.Classable.Obj(m), isNested = false, enclosingObject).merge
-      case m: ModuleDef                  =>
+
+      case m: ModuleDef =>
         m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, Some(m)))))
-      case clazz: ClassDef               =>
+
+      case clazz: ClassDef =>
         impl
           .transformClass(
             api.Classable.Clazz(clazz),
@@ -44,7 +47,8 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
             enclosingObject
           )
           .merge
-      case other                         => other
+
+      case other => other
     }
 
   override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
