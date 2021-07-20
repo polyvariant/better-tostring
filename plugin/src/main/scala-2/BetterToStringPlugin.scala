@@ -27,22 +27,26 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
 
   private def modifyClasses(tree: Tree, enclosingObject: Option[ModuleDef]): Tree =
     tree match {
-      case p: PackageDef   => p.copy(stats = p.stats.map(modifyClasses(_, None)))
+      case p: PackageDef                 => p.copy(stats = p.stats.map(modifyClasses(_, None)))
       // https://github.com/polyvariant/better-tostring/issues/59
       // start here - ModuleDef which is a case object should be transformed.
       // We might need to change the type of CompilerApi#Clazz to allow objects.
-      case m: ModuleDef    =>
+      case m: ModuleDef if m.mods.isCase =>
+        //isNested=false for the same reason as in the ClassDef case
+        impl.transformClass(Right(m), isNested = false, enclosingObject).merge
+      case m: ModuleDef                  =>
         m.copy(impl = m.impl.copy(body = m.impl.body.map(modifyClasses(_, Some(m)))))
-      case clazz: ClassDef =>
+      case clazz: ClassDef               =>
         impl.transformClass(
-          clazz,
+          //todo either -> adt
+          Left(clazz),
           // If it was nested, we wouldn't be in this branch.
           // Scala 2.x compiler API limitation (classes can't tell what the owner is).
           // This should be more optimal as we don't traverse every template, but it hasn't been benchmarked.
           isNested = false,
           enclosingObject
-        )
-      case other           => other
+        ).merge
+      case other                         => other
     }
 
   override def newPhase(prev: Phase): Phase = new StdPhase(prev) {

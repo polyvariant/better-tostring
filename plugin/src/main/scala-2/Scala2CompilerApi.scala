@@ -7,7 +7,7 @@ trait Scala2CompilerApi[G <: Global] extends CompilerApi {
   val theGlobal: G
   import theGlobal._
   type Tree = theGlobal.Tree
-  type Clazz = ClassDef
+  type Clazz = Either[ClassDef, ModuleDef]
   type Param = ValDef
   type ParamName = TermName
   type Method = DefDef
@@ -21,11 +21,15 @@ object Scala2CompilerApi {
       val theGlobal: global.type = global
       import global._
 
-      def params(clazz: Clazz): List[Param] = clazz.impl.body.collect {
-        case v: ValDef if v.mods.hasFlag(Flags.CASEACCESSOR) => v
+      def params(clazz: Clazz): List[Param] = clazz match {
+        case Left(clazz) =>
+          clazz.impl.body.collect {
+            case v: ValDef if v.mods.isCaseAccessor => v
+          }
+        case Right(_)    => Nil
       }
 
-      def className(clazz: Clazz): String = clazz.name.toString
+      def className(clazz: Clazz): String = clazz.merge.name.toString
 
       def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean =
         // couldn't find any nice api for this. `m.symbol.isPackageObject` does not work after the parser compiler phase (needs to run later).
@@ -46,16 +50,26 @@ object Scala2CompilerApi {
         body
       )
 
-      def addMethod(clazz: Clazz, method: Method): Clazz =
-        clazz.copy(impl = clazz.impl.copy(body = clazz.impl.body :+ method))
+      def addMethod(clazz: Clazz, method: Method): Clazz = {
+        val newBody = clazz.merge.impl.copy(body = clazz.merge.impl.body :+ method)
+        clazz
+          .left
+          .map {
+            _.copy(impl = newBody)
+          }
+          .map {
+            _.copy(impl = newBody)
+          }
+      }
 
-      def methodNames(clazz: Clazz): List[String] = clazz.impl.body.collect {
+      def methodNames(clazz: Clazz): List[String] = clazz.merge.impl.body.collect {
         case d: DefDef => d.name.toString
         case d: ValDef => d.name.toString
       }
 
-      def isCaseClass(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.CASE)
-      def isObject(clazz: Clazz): Boolean = clazz.mods.hasFlag(Flags.MODULE)
+      def isCaseClass(clazz: Clazz): Boolean = clazz.merge.mods.isCase
+      // Always return true for ModuleDef - apparently ModuleDef doesn't have the module flag...
+      def isObject(clazz: Clazz): Boolean = clazz.fold(_.mods.hasModuleFlag, _ => true)
     }
 
 }
