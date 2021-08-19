@@ -8,9 +8,7 @@ import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.plugins.PluginPhase
 import dotty.tools.dotc.plugins.StandardPlugin
 import dotty.tools.dotc.typer.FrontEnd
-
 import scala.annotation.tailrec
-
 import tpd.*
 
 final class BetterToStringPlugin extends StandardPlugin:
@@ -30,7 +28,7 @@ final class BetterToStringPluginPhase extends PluginPhase:
     val isNested = ownerOwner.ownersIterator.exists(!_.is(Module))
 
     val enclosingObject =
-      if (ownerOwner.is(Module)) then Some(ownerOwner)
+      if ownerOwner.is(Module) then Some(ownerOwner)
       else None
 
     BetterToStringImpl

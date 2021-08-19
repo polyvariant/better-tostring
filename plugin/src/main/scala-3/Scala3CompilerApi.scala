@@ -15,7 +15,6 @@ import dotty.tools.dotc.core.Names
 import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.core.Symbols.ClassSymbol
 import dotty.tools.dotc.core.Types
-
 import tpd.*
 
 trait Scala3CompilerApi extends CompilerApi:
