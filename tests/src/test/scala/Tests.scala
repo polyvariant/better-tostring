@@ -1,4 +1,5 @@
 import munit.FunSuite
+
 import munit.TestOptions
 import b2s.buildinfo.BuildInfo
 

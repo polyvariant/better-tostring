@@ -30,7 +30,7 @@ final class BetterToStringPluginPhase extends PluginPhase:
     val isNested = ownerOwner.ownersIterator.exists(!_.is(Module))
 
     val enclosingObject =
-      if (ownerOwner.is(Module)) then Some(ownerOwner)
+      if ownerOwner.is(Module) then Some(ownerOwner)
       else None
 
     BetterToStringImpl
