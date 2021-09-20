@@ -48,7 +48,7 @@ ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
 //sbt-ci-release settings
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
-  RefPredicate.StartsWith(Ref.Branch("master")),
+  RefPredicate.StartsWith(Ref.Branch("main")),
   RefPredicate.StartsWith(Ref.Tag("v"))
 )
 ThisBuild / githubWorkflowPublishPreamble := Seq(
