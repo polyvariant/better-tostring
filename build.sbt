@@ -29,16 +29,18 @@ ThisBuild / resolvers += Resolver.JCenterRepository
 
 ThisBuild / scalaVersion := "3.0.0"
 ThisBuild / crossScalaVersions := Seq(
-  "2.12.12",
   "2.12.13",
   "2.12.14",
+  "2.12.15",
   //
   "2.13.4",
   "2.13.5",
   "2.13.6",
   //
   "3.0.0",
-  "3.0.1"
+  "3.0.1",
+  "3.0.2",
+  "3.1.0-RC2",
 )
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
