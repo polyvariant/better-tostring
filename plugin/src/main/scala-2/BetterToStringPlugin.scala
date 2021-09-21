@@ -1,4 +1,4 @@
-package com.kubukoz
+package org.polyvariant
 
 import scala.tools.nsc.Global
 import scala.tools.nsc.Phase

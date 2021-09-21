@@ -1,4 +1,4 @@
-package com.kubukoz
+package org.polyvariant
 
 import scala.reflect.internal.Flags
 import scala.tools.nsc.Global

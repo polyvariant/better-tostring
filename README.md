@@ -1,8 +1,8 @@
 # better-tostring
 
 [![License](http://img.shields.io/:license-Apache%202-green.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
-[![Latest version](https://index.scala-lang.org/kubukoz/better-tostring/better-tostring/latest.svg)](https://index.scala-lang.org/kubukoz/better-tostring/better-tostring)
-[![Maven Central](https://img.shields.io/maven-central/v/com.kubukoz/better-tostring_2.13.5.svg)](http://search.maven.org/#search%7Cga%7C1%7Cbetter-tostring)
+[![Latest version](https://index.scala-lang.org/polyvariant/better-tostring/better-tostring/latest.svg)](https://index.scala-lang.org/kubukoz/better-tostring/better-tostring)
+[![Maven Central](https://img.shields.io/maven-central/v/org.polyvariant/better-tostring_2.13.5.svg)](http://search.maven.org/#search%7Cga%7C1%7Cbetter-tostring)
 
 A Scala compiler plugin that replaces the default `toString` implementation of case classes with a more verbose one.
 
@@ -27,8 +27,10 @@ User("Joe", 18).toString() // "User(name = Joe, age = 18)"
 In sbt:
 
 ```scala
-libraryDependencies += compilerPlugin("com.kubukoz" % "better-tostring" % version cross CrossVersion.full)
+libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % version cross CrossVersion.full)
 ```
+
+(note: versions before `0.3.8` were published under the `com.kubukoz` organization instead of `org.polyvariant`)
 
 The plugin is currently published for the following Scala versions:
 
@@ -36,7 +38,7 @@ The plugin is currently published for the following Scala versions:
 - 2.13.4, 2.13.5, 2.13.6
 - 3.0.0, 3.0.1, 3.0.2, 3.1.0-RC2
 
-For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/com/kubukoz).
+For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/org/polyvariant) ([or even older versions](https://repo1.maven.org/maven2/org/polyvariant)).
 
 As a rule of thumb, active support will include _at least_ 3 latest stable versions of 2.12, 2.13 and 3.0 for the foreseeable future.
 

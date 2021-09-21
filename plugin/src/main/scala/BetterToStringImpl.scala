@@ -1,4 +1,4 @@
-package com.kubukoz
+package org.polyvariant
 
 // Source-compatible core between 2.x and 3.x implementations
 

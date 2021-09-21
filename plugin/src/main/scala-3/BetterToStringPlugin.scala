@@ -1,4 +1,4 @@
-package com.kubukoz
+package org.polyvariant
 
 import dotty.tools.dotc.ast.tpd
 import dotty.tools.dotc.core.Contexts.Context
