@@ -1,7 +1,7 @@
 inThisBuild(
   List(
-    organization := "com.kubukoz",
-    homepage := Some(url("https://github.com/kubukoz/better-toString")),
+    organization := "org.polyvariant",
+    homepage := Some(url("https://github.com/polyvariant/better-tostring")),
     licenses := List(
       "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
     ),
@@ -10,7 +10,7 @@ inThisBuild(
         "kubukoz",
         "Jakub Kozłowski",
         "kubukoz@gmail.com",
-        url("https://kubukoz.com")
+        url("https://blog.kubukoz.com")
       ),
       Developer(
         "majk-p",
@@ -18,7 +18,8 @@ inThisBuild(
         "admin@michalp.net",
         url("https://michalp.net")
       )
-    )
+    ),
+    versionScheme := Some("early-semver")
   )
 )
 
@@ -65,7 +66,9 @@ ThisBuild / githubWorkflowEnv ++= List(
 }.toMap
 
 val commonSettings = Seq(
-  scalacOptions --= Seq("-Xfatal-warnings", "-source", "future")
+  scalacOptions --= Seq("-Xfatal-warnings", "-source", "future"),
+  sonatypeCredentialHost := "s01.oss.sonatype.org",
+  sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 )
 
 val plugin = project.settings(
@@ -82,30 +85,28 @@ val plugin = project.settings(
   )
 )
 
-val tests = project
-  .settings(
-    (publish / skip) := true,
-    commonSettings,
-    scalacOptions ++= {
-      val jar = (plugin / Compile / packageBin).value
-      Seq(
-        s"-Xplugin:${jar.getAbsolutePath}",
-        s"-Xplugin-require:better-tostring",
-        s"-Jdummy=${jar.lastModified}"
-      ) //borrowed from bm4
-    },
-    libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % (scalaVersion.value match {
-        case "3.0.0-M3"  => "0.7.22"
-        case "3.0.0-RC1" => "0.7.23"
-        case "3.0.0-RC2" => "0.7.25"
-        case _           => "0.7.26"
-      }) % Test
-    ),
-    buildInfoKeys ++= Seq(scalaVersion),
-    buildInfoPackage := "b2s.buildinfo"
-  )
-  .enablePlugins(BuildInfoPlugin)
+val tests = project.settings(
+  (publish / skip) := true,
+  commonSettings,
+  scalacOptions ++= {
+    val jar = (plugin / Compile / packageBin).value
+    Seq(
+      s"-Xplugin:${jar.getAbsolutePath}",
+      s"-Xplugin-require:better-tostring",
+      s"-Jdummy=${jar.lastModified}"
+    ) //borrowed from bm4
+  },
+  libraryDependencies ++= Seq(
+    "org.scalameta" %% "munit" % (scalaVersion.value match {
+      case "3.0.0-M3"  => "0.7.22"
+      case "3.0.0-RC1" => "0.7.23"
+      case "3.0.0-RC2" => "0.7.25"
+      case _           => "0.7.26"
+    }) % Test
+  ),
+  buildInfoKeys ++= Seq(scalaVersion),
+  buildInfoPackage := "b2s.buildinfo"
+).enablePlugins(BuildInfoPlugin)
 
 val betterToString =
   project
