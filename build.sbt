@@ -109,7 +109,7 @@ val tests = project
         s"-Jdummy=${jar.lastModified}"
       ) //borrowed from bm4
     },
-    libraryDependencies ++= Seq("org.scalameta" %% "munit" % "0.7.26" % Test),
+    libraryDependencies ++= Seq("org.scalameta" %% "munit" % "0.7.29" % Test),
     buildInfoKeys ++= Seq(scalaVersion),
     buildInfoPackage := "b2s.buildinfo"
   )
