@@ -101,7 +101,7 @@ val tests = project.settings(
       case "3.0.0-M3"  => "0.7.22"
       case "3.0.0-RC1" => "0.7.23"
       case "3.0.0-RC2" => "0.7.25"
-      case _           => "0.7.26"
+      case _           => "0.7.29"
     }) % Test
   ),
   buildInfoKeys ++= Seq(scalaVersion),
