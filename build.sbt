@@ -41,7 +41,8 @@ ThisBuild / crossScalaVersions := Seq(
   "3.0.0",
   "3.0.1",
   "3.0.2",
-  "3.1.0-RC2"
+  "3.1.0-RC2",
+  "3.1.0-RC3"
 )
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
@@ -82,7 +83,18 @@ val plugin = project.settings(
         s"scala3-compiler_3"
       else "scala-compiler"
     ) % scalaVersion.value
-  )
+  ),
+  Compile / unmanagedSourceDirectories ++= {
+    val extraDirectoriesWithPredicates = Map[String, String => Boolean](
+      ("scala-3.0.x", (_.startsWith("3.0"))),
+      ("scala-3.1.0+", (v => v.startsWith("3") && !v.startsWith("3.0")))
+    )
+
+    extraDirectoriesWithPredicates.collect {
+      case (dir, predicate) if predicate(scalaVersion.value) =>
+        sourceDirectory.value / "main" / dir
+    }.toList
+  }
 )
 
 val tests = project
@@ -97,14 +109,7 @@ val tests = project
         s"-Jdummy=${jar.lastModified}"
       ) //borrowed from bm4
     },
-    libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % (scalaVersion.value match {
-        case "3.0.0-M3"  => "0.7.22"
-        case "3.0.0-RC1" => "0.7.23"
-        case "3.0.0-RC2" => "0.7.25"
-        case _           => "0.7.26"
-      }) % Test
-    ),
+    libraryDependencies ++= Seq("org.scalameta" %% "munit" % "0.7.26" % Test),
     buildInfoKeys ++= Seq(scalaVersion),
     buildInfoPackage := "b2s.buildinfo"
   )
