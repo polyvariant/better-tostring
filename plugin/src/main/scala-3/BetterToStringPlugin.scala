@@ -7,7 +7,6 @@ import dotty.tools.dotc.core.Flags.Package
 import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.plugins.PluginPhase
 import dotty.tools.dotc.plugins.StandardPlugin
-import dotty.tools.dotc.typer.FrontEnd
 
 import scala.annotation.tailrec
 
@@ -21,7 +20,7 @@ final class BetterToStringPlugin extends StandardPlugin:
 final class BetterToStringPluginPhase extends PluginPhase:
 
   override val phaseName: String = "better-tostring-phase"
-  override val runsAfter: Set[String] = Set(FrontEnd.name)
+  override val runsAfter: Set[String] = Set(org.polyvariant.AfterPhase.name)
 
   override def transformTemplate(t: Template)(using ctx: Context): Tree =
     val clazz = ctx.owner.asClass
