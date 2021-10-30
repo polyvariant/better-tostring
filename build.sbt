@@ -108,7 +108,7 @@ val tests = project
         s"-Xplugin:${jar.getAbsolutePath}",
         s"-Xplugin-require:better-tostring",
         s"-Jdummy=${jar.lastModified}"
-      ) //borrowed from bm4
+      ) // borrowed from bm4
     },
     libraryDependencies ++= Seq("org.scalameta" %% "munit" % "0.7.26" % Test),
     buildInfoKeys ++= Seq(scalaVersion),
