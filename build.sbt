@@ -136,7 +136,11 @@ val betterToString =
   project
     .in(file("."))
     .settings(name := "root")
-    .settings(commonSettings, (publish / skip) := true)
+    .settings(
+      commonSettings,
+      (publish / skip) := true,
+      addCommandAlias("generateAll", List("githubWorkflowGenerate", "mergifyWrite", "readmeWrite").mkString(";"))
+    )
     .aggregate(plugin, tests)
     .enablePlugins(MergifyPlugin)
     .enablePlugins(ReadmePlugin)
