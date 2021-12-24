@@ -17,13 +17,13 @@ object ReadmePlugin extends AutoPlugin {
 
       def pattern(inside: String) = s"""<!-- SCALA VERSIONS START -->$inside<!-- SCALA VERSIONS END -->"""
 
-      val versionsGrouped = crossScalaVersions.value.groupBy {
-        case s if s.startsWith("2.13") => "2.13"
-        case s if s.startsWith("2.12") => "2.12"
-        case s                         => "3"
+      val groups = List("2.12", "2.13", "3.0", "3.1")
+
+      val versionsGrouped = crossScalaVersions.value.groupBy { v =>
+        groups.find(v.startsWith(_)).getOrElse(sys.error("Unknown group for version: " + v))
       }
 
-      val versionsString = List("2.12", "2.13", "3")
+      val versionsString = groups
         .map { prefix =>
           "- " + versionsGrouped(prefix).mkString(", ")
         }

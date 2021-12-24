@@ -31,22 +31,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 ThisBuild / resolvers += Resolver.JCenterRepository
 
 ThisBuild / scalaVersion := "3.0.0"
-ThisBuild / crossScalaVersions := Seq(
-  "2.12.13",
-  "2.12.14",
-  "2.12.15",
-  //
-  "2.13.5",
-  "2.13.6",
-  "2.13.7",
-  //
-  "3.0.0",
-  "3.0.1",
-  "3.0.2",
-  "3.1.0-RC2",
-  "3.1.0-RC3",
-  "3.1.0"
-)
+ThisBuild / crossScalaVersions := IO.read(file("scala-versions")).split("\n")
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
 

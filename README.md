@@ -37,7 +37,8 @@ The plugin is currently published for the following Scala versions:
 <!-- SCALA VERSIONS START -->
 - 2.12.13, 2.12.14, 2.12.15
 - 2.13.5, 2.13.6, 2.13.7
-- 3.0.0, 3.0.1, 3.0.2, 3.1.0-RC2, 3.1.0-RC3, 3.1.0
+- 3.0.0, 3.0.1, 3.0.2
+- 3.1.0-RC2, 3.1.0-RC3, 3.1.0, 3.1.1-RC1, 3.1.1-RC2
 <!-- SCALA VERSIONS END -->
 
 For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/org/polyvariant) ([or even older versions](https://repo1.maven.org/maven2/org/polyvariant)).
@@ -68,6 +69,18 @@ which could make it easier to find certain issues with your tests (mismatching v
 We also want the plugin to become minimal in the implementation and easy to use (plug & play), without lots of configuration options, so the representation of the data types will not be customizable. **The format may change over time without prior notice**, so you shouldn't rely on the exact representation (as is the case with any `toString` methods), but any changes in behavior will be communicated in the release notes.
 
 If you need a different `toString`, we suggest that you implement one yourself. You may also want to look at [pprint](https://github.com/com-lihaoyi/PPrint).
+
+## Contributing
+
+If you want to add a new feature, check if it's already been discussed in the issues list.
+
+Before you start working on an existing feature / bugfix, let us know you're taking it on in its comments :)
+
+To add a new Scala version:
+
+1. Add it to `./scala-versions`
+2. Run `sbt generateAll`
+3. Commit and open a pull request.s
 
 ## Maintainers
 
