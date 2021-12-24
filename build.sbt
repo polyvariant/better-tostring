@@ -74,8 +74,8 @@ ThisBuild / githubWorkflowGeneratedCI ~= {
     case job if job.id == "build" =>
       job.copy(
         steps = job.steps.map {
-          case step if step.name == Some("Check that workflows are up to date") =>
-            WorkflowStep.Sbt(List("githubWorkflowCheck", "mergifyCheck"))
+          case step: WorkflowStep.Sbt if step.name == Some("Check that workflows are up to date") =>
+            step.copy(commands = List("githubWorkflowCheck", "mergifyCheck"))
           case step => step
         }
       )
