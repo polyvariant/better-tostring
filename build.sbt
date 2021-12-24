@@ -75,11 +75,11 @@ ThisBuild / githubWorkflowGeneratedCI ~= {
       job.copy(
         steps = job.steps.map {
           case step: WorkflowStep.Sbt if step.name == Some("Check that workflows are up to date") =>
-            step.copy(commands = List("githubWorkflowCheck", "mergifyCheck"))
-          case step => step
+            step.copy(commands = List("githubWorkflowCheck", "mergifyCheck", "readmeCheck"))
+          case step                                                                               => step
         }
       )
-    case job => job
+    case job                      => job
   }
 }
 
@@ -136,6 +136,11 @@ val betterToString =
   project
     .in(file("."))
     .settings(name := "root")
-    .settings(commonSettings, (publish / skip) := true)
+    .settings(
+      commonSettings,
+      (publish / skip) := true,
+      addCommandAlias("generateAll", List("githubWorkflowGenerate", "mergifyWrite", "readmeWrite").mkString(";"))
+    )
     .aggregate(plugin, tests)
-.enablePlugins(MergifyPlugin)
+    .enablePlugins(MergifyPlugin)
+    .enablePlugins(ReadmePlugin)
