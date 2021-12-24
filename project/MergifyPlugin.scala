@@ -4,7 +4,7 @@ import sbt.Def
 import sbt._
 import _root_.io.circe
 import cats.implicits._
-import sbtghactions.GenerativeKeys.githubWorkflowJavaVersions
+import sbtghactions.GenerativeKeys._
 import sbt.Keys.crossScalaVersions
 
 object MergifyPlugin extends AutoPlugin {
@@ -17,8 +17,9 @@ object MergifyPlugin extends AutoPlugin {
     mergifyGenerate := Def.task {
       import circe.syntax._
 
-      val jobs = (crossScalaVersions.value.toList, githubWorkflowJavaVersions.value.toList).mapN { case (sv, java) =>
-        s"Build and Test (ubuntu-latest, $sv, $java)"
+      val jobs = (githubWorkflowOSes.value.toList, crossScalaVersions.value.toList, githubWorkflowJavaVersions.value.toList).mapN {
+        case (os, sv, java) =>
+          s"Build and Test ($os, $sv, $java)"
       }
 
       val mergify = circe
@@ -55,7 +56,12 @@ object MergifyPlugin extends AutoPlugin {
       val expected = IO.read(file(".mergify.yml")).trim
       val actual = mergifyGenerate.value.trim
       if (expected != actual)
-        sys.error(s".mergify.yml mismatch! Expected:\n$expected\nActual:\n$actual")
+        sys.error(s""".mergify.yml mismatch! Expected:
+                     |$expected
+                     |Actual:
+                     |$actual
+                     |
+                     |Run `sbt mergifyWrite` and commit the result to try again.""".stripMargin)
     }.value
   )
 
