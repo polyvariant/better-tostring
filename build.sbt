@@ -25,6 +25,8 @@ inThisBuild(
 
 val GraalVM11 = "graalvm-ce-java11@20.3.0"
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 // for dottydoc
 ThisBuild / resolvers += Resolver.JCenterRepository
 
@@ -66,6 +68,20 @@ ThisBuild / githubWorkflowEnv ++= List(
 ).map { envKey =>
   envKey -> s"$${{ secrets.$envKey }}"
 }.toMap
+
+ThisBuild / githubWorkflowGeneratedCI ~= {
+  _.map {
+    case job if job.id == "build" =>
+      job.copy(
+        steps = job.steps.map {
+          case step: WorkflowStep.Sbt if step.name == Some("Check that workflows are up to date") =>
+            step.copy(commands = List("githubWorkflowCheck", "mergifyCheck"))
+          case step => step
+        }
+      )
+    case job => job
+  }
+}
 
 val commonSettings = Seq(
   scalacOptions --= Seq("-Xfatal-warnings", "-source", "future"),
@@ -122,3 +138,4 @@ val betterToString =
     .settings(name := "root")
     .settings(commonSettings, (publish / skip) := true)
     .aggregate(plugin, tests)
+.enablePlugins(MergifyPlugin)
