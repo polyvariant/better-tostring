@@ -45,7 +45,9 @@ ThisBuild / crossScalaVersions := Seq(
   "3.0.2",
   "3.1.0-RC2",
   "3.1.0-RC3",
-  "3.1.0"
+  "3.1.0",
+  "3.1.1-RC1",
+  "3.1.1-RC2"
 )
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
