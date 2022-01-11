@@ -80,7 +80,7 @@ To add a new Scala version:
 
 1. Add it to `./scala-versions`
 2. Run `sbt generateAll`
-3. Commit and open a pull request.s
+3. Commit and open a pull request.
 
 ## Maintainers
 
