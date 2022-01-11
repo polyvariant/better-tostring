@@ -9,6 +9,7 @@ pull_request_rules:
   - status-success="Build and Test (ubuntu-latest, 2.13.5, graalvm-ce-java11@20.3.0)"
   - status-success="Build and Test (ubuntu-latest, 2.13.6, graalvm-ce-java11@20.3.0)"
   - status-success="Build and Test (ubuntu-latest, 2.13.7, graalvm-ce-java11@20.3.0)"
+  - status-success="Build and Test (ubuntu-latest, 2.13.8, graalvm-ce-java11@20.3.0)"
   - status-success="Build and Test (ubuntu-latest, 3.0.0, graalvm-ce-java11@20.3.0)"
   - status-success="Build and Test (ubuntu-latest, 3.0.1, graalvm-ce-java11@20.3.0)"
   - status-success="Build and Test (ubuntu-latest, 3.0.2, graalvm-ce-java11@20.3.0)"
