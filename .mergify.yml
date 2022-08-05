@@ -16,6 +16,7 @@ pull_request_rules:
   - status-success="Build and Test (ubuntu-latest, 3.1.0, graalvm-ce-java11@20.3.0)"
   - status-success="Build and Test (ubuntu-latest, 3.1.1, graalvm-ce-java11@20.3.0)"
   - status-success="Build and Test (ubuntu-latest, 3.1.2, graalvm-ce-java11@20.3.0)"
+  - status-success="Build and Test (ubuntu-latest, 3.1.3, graalvm-ce-java11@20.3.0)"
   actions:
     merge:
       method: merge
