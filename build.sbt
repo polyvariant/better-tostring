@@ -31,7 +31,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 ThisBuild / resolvers += Resolver.JCenterRepository
 
 ThisBuild / scalaVersion := "3.0.0"
-ThisBuild / crossScalaVersions := IO.read(file("scala-versions")).split("\n")
+ThisBuild / crossScalaVersions := IO.read(file("scala-versions")).split("\n").map(_.trim)
 
 ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
 
@@ -89,7 +89,8 @@ val plugin = project.settings(
   Compile / unmanagedSourceDirectories ++= {
     val extraDirectoriesWithPredicates = Map[String, String => Boolean](
       ("scala-3.0.x", (_.startsWith("3.0"))),
-      ("scala-3.1.0+", (v => v.startsWith("3") && !v.startsWith("3.0")))
+      ("scala-3.1.0+", (v => v.startsWith("3.1") && v.startsWith("3.0"))),
+      ("scala-3.2.0+", (v => v.startsWith("3") && !v.startsWith("3.1") && !v.startsWith("3.0")))
     )
 
     extraDirectoriesWithPredicates.collect {
