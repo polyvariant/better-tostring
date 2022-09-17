@@ -101,7 +101,8 @@ val tests = project
     },
     libraryDependencies ++= Seq("org.scalameta" %% "munit" % "0.7.26" % Test),
     buildInfoKeys ++= Seq(scalaVersion),
-    buildInfoPackage := "b2s.buildinfo"
+    buildInfoPackage := "b2s.buildinfo",
+    Compile / doc / sources := Seq()
   )
   .enablePlugins(BuildInfoPlugin, NoPublishPlugin)
 
