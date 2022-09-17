@@ -60,31 +60,33 @@ val commonSettings = Seq(
   mimaPreviousArtifacts := Set.empty
 )
 
-val plugin = project.settings(
-  name := "better-tostring",
-  commonSettings,
-  crossTarget := target.value / s"scala-${scalaVersion.value}", // workaround for https://github.com/sbt/sbt/issues/5097
-  crossVersion := CrossVersion.full,
-  libraryDependencies ++= Seq(
-    scalaOrganization.value % (
-      if (scalaVersion.value.startsWith("3"))
-        s"scala3-compiler_3"
-      else "scala-compiler"
-    ) % scalaVersion.value
-  ),
-  Compile / unmanagedSourceDirectories ++= {
-    val extraDirectoriesWithPredicates = Map[String, String => Boolean](
-      ("scala-3.0.x", (_.startsWith("3.0"))),
-      ("scala-3.1.x", (_.startsWith("3.1"))),
-      ("scala-3.2.x", (_.startsWith("3.2")))
-    )
+val plugin = project
+  .settings(
+    name := "better-tostring",
+    commonSettings,
+    crossTarget := target.value / s"scala-${scalaVersion.value}", // workaround for https://github.com/sbt/sbt/issues/5097
+    crossVersion := CrossVersion.full,
+    libraryDependencies ++= Seq(
+      scalaOrganization.value % (
+        if (scalaVersion.value.startsWith("3"))
+          s"scala3-compiler_3"
+        else "scala-compiler"
+      ) % scalaVersion.value
+    ),
+    Compile / unmanagedSourceDirectories ++= {
+      val extraDirectoriesWithPredicates = Map[String, String => Boolean](
+        ("scala-3.0.x", (_.startsWith("3.0"))),
+        ("scala-3.1.x", (_.startsWith("3.1"))),
+        ("scala-3.2.x", (_.startsWith("3.2")))
+      )
 
-    extraDirectoriesWithPredicates.collect {
-      case (dir, predicate) if predicate(scalaVersion.value) =>
-        sourceDirectory.value / "main" / dir
-    }.toList
-  }
-)
+      extraDirectoriesWithPredicates.collect {
+        case (dir, predicate) if predicate(scalaVersion.value) =>
+          sourceDirectory.value / "main" / dir
+      }.toList
+    }
+  )
+  .enablePlugins(BackpublishPlugin)
 
 val tests = project
   .settings(
@@ -114,6 +116,5 @@ val betterToString =
     )
     .aggregate(plugin, tests)
     .enablePlugins(NoPublishPlugin)
-    .enablePlugins(BackpublishPlugin)
     .enablePlugins(MergifyPlugin)
     .enablePlugins(ReadmePlugin)
