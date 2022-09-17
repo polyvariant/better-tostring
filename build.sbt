@@ -56,7 +56,8 @@ ThisBuild / githubWorkflowGeneratedCI ~= {
 }
 
 val commonSettings = Seq(
-  scalacOptions --= Seq("-source:3.0-migration")
+  scalacOptions --= Seq("-source:3.0-migration"),
+  mimaPreviousArtifacts := Set.empty
 )
 
 val plugin = project.settings(
