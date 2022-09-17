@@ -3,22 +3,22 @@ pull_request_rules:
   conditions:
   - author=scala-steward
   - body~=labels:.*semver-patch.*
-  - status-success="Build and Test (ubuntu-latest, 2.12.13, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 2.12.14, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 2.12.15, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 2.12.17, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 2.13.5, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 2.13.6, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 2.13.7, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 2.13.8, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.0.0, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.0.1, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.0.2, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.1.0, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.1.1, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.1.2, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.1.3, graalvm-ce-java11@20.3.0)"
-  - status-success="Build and Test (ubuntu-latest, 3.2.0, graalvm-ce-java11@20.3.0)"
+  - status-success="Build and Test (ubuntu-latest, 2.12.13, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 2.12.14, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 2.12.15, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 2.12.17, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 2.13.5, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 2.13.6, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 2.13.7, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 2.13.8, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.0.0, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.0.1, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.0.2, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.1.0, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.1.1, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.1.2, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.1.3, JavaSpec(Temurin,8))"
+  - status-success="Build and Test (ubuntu-latest, 3.2.0, JavaSpec(Temurin,8))"
   actions:
     merge:
       method: merge
