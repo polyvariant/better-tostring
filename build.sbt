@@ -1,29 +1,18 @@
-inThisBuild(
-  List(
-    organization := "org.polyvariant",
-    homepage := Some(url("https://github.com/polyvariant/better-tostring")),
-    licenses := List(
-      "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
-    ),
-    developers := List(
-      Developer(
-        "kubukoz",
-        "Jakub Kozłowski",
-        "kubukoz@gmail.com",
-        url("https://blog.kubukoz.com")
-      ),
-      Developer(
-        "majk-p",
-        "Michał Pawlik",
-        "admin@michalp.net",
-        url("https://michalp.net")
-      )
-    ),
-    versionScheme := Some("early-semver")
-  )
+ThisBuild / tlBaseVersion := "0.3"
+ThisBuild / organization := "org.polyvariant"
+ThisBuild / organizationName := "Polyvariant"
+ThisBuild / startYear := Some(2020)
+ThisBuild / licenses := Seq(License.Apache2)
+ThisBuild / developers := List(
+  tlGitHubDev("kubukoz", "Jakub Kozłowski"),
+  tlGitHubDev("majk-p", "Michał Pawlik")
 )
+ThisBuild / tlSonatypeUseLegacyHost := false
 
-val GraalVM11 = "graalvm-ce-java11@20.3.0"
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
+ThisBuild / tlFatalWarnings := false
+ThisBuild / tlFatalWarningsInCi := false
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -32,8 +21,6 @@ ThisBuild / resolvers += Resolver.JCenterRepository
 
 ThisBuild / scalaVersion := "3.0.0"
 ThisBuild / crossScalaVersions := IO.read(file("scala-versions")).split("\n").map(_.trim)
-
-ThisBuild / githubWorkflowJavaVersions := Seq(GraalVM11)
 
 //sbt-ci-release settings
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
@@ -69,9 +56,7 @@ ThisBuild / githubWorkflowGeneratedCI ~= {
 }
 
 val commonSettings = Seq(
-  scalacOptions --= Seq("-Xfatal-warnings", "-source", "future"),
-  sonatypeCredentialHost := "s01.oss.sonatype.org",
-  sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
+  scalacOptions --= Seq("-source:3.0-migration")
 )
 
 val plugin = project.settings(
@@ -102,7 +87,6 @@ val plugin = project.settings(
 
 val tests = project
   .settings(
-    (publish / skip) := true,
     commonSettings,
     scalacOptions ++= {
       val jar = (plugin / Compile / packageBin).value
@@ -116,7 +100,7 @@ val tests = project
     buildInfoKeys ++= Seq(scalaVersion),
     buildInfoPackage := "b2s.buildinfo"
   )
-  .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(BuildInfoPlugin, NoPublishPlugin)
 
 val betterToString =
   project
@@ -128,5 +112,7 @@ val betterToString =
       addCommandAlias("generateAll", List("githubWorkflowGenerate", "mergifyWrite", "readmeWrite").mkString(";"))
     )
     .aggregate(plugin, tests)
+    .enablePlugins(NoPublishPlugin)
+    .enablePlugins(BackpublishPlugin)
     .enablePlugins(MergifyPlugin)
     .enablePlugins(ReadmePlugin)

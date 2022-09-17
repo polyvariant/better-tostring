@@ -4,8 +4,9 @@ import sbt.Def
 import sbt._
 import _root_.io.circe
 import cats.implicits._
-import sbtghactions.GenerativeKeys._
 import sbt.Keys.crossScalaVersions
+import org.typelevel.sbt.gha.GenerativeKeys.githubWorkflowJavaVersions
+import org.typelevel.sbt.gha.GenerativeKeys.githubWorkflowOSes
 
 object MergifyPlugin extends AutoPlugin {
 

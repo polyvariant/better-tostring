@@ -2,7 +2,6 @@ import sbt.AutoPlugin
 
 import sbt.Def
 import sbt._
-import sbtghactions.GenerativeKeys._
 import sbt.Keys.crossScalaVersions
 
 object ReadmePlugin extends AutoPlugin {
