@@ -22,16 +22,6 @@ ThisBuild / resolvers += Resolver.JCenterRepository
 ThisBuild / scalaVersion := "3.0.0"
 ThisBuild / crossScalaVersions := IO.read(file("scala-versions")).split("\n").map(_.trim)
 
-//sbt-ci-release settings
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
-ThisBuild / githubWorkflowPublishTargetBranches := Seq(
-  RefPredicate.StartsWith(Ref.Branch("main")),
-  RefPredicate.StartsWith(Ref.Tag("v"))
-)
-ThisBuild / githubWorkflowPublishPreamble := Seq(
-  WorkflowStep.Use(UseRef.Public("olafurpg", "setup-gpg", "v3"))
-)
-ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
 ThisBuild / githubWorkflowEnv ++= List(
   "PGP_PASSPHRASE",
   "PGP_SECRET",
@@ -57,7 +47,9 @@ ThisBuild / githubWorkflowGeneratedCI ~= {
 
 val commonSettings = Seq(
   scalacOptions --= Seq("-source:3.0-migration"),
-  mimaPreviousArtifacts := Set.empty
+  mimaPreviousArtifacts := Set.empty,
+  // We don't need KP
+  libraryDependencies -= compilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 )
 
 val plugin = project
