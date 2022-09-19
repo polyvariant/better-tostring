@@ -42,7 +42,7 @@ The plugin is currently published for the following Scala versions:
 - 3.2.0
 <!-- SCALA VERSIONS END -->
 
-For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/org/polyvariant) ([or even older versions](https://repo1.maven.org/maven2/org/polyvariant)).
+For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/org/polyvariant) ([or even older versions](https://repo1.maven.org/maven2/com/kubukoz)).
 
 As a rule of thumb, active support will include _at least_ 3 latest stable versions of 2.12, 2.13 and 3.0 for the foreseeable future.
 
