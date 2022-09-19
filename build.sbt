@@ -57,7 +57,9 @@ ThisBuild / githubWorkflowGeneratedCI ~= {
 
 val commonSettings = Seq(
   scalacOptions --= Seq("-source:3.0-migration"),
-  mimaPreviousArtifacts := Set.empty
+  mimaPreviousArtifacts := Set.empty,
+  // We don't need KP
+  libraryDependencies -= compilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 )
 
 val plugin = project
