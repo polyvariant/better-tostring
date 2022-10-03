@@ -122,6 +122,21 @@ class Tests extends FunSuite {
     )
   }
 
+  // https://github.com/polyvariant/better-tostring/issues/34
+  test("(FAIL) Case class with inherited toString should not get extra toString".fail) {
+    assertEquals(
+      HasInheritedToString(0).toString,
+      "defined in superclass"
+    )
+  }
+
+  test("Case class with inherited and overridden toString should use the override") {
+    assertEquals(
+      HasInheritedAndCustomToString(0).toString,
+      "defined in child"
+    )
+  }
+
 }
 
 case object CaseObject
@@ -174,4 +189,14 @@ object MethodLocalWrapper {
     LocalClass("a").toString()
   }
 
+}
+
+trait HasToString {
+  override def toString(): String = "defined in superclass"
+}
+
+case class HasInheritedToString(i: Int) extends HasToString
+
+case class HasInheritedAndCustomToString(i: Int) extends HasToString {
+  override def toString(): String = "defined in child"
 }

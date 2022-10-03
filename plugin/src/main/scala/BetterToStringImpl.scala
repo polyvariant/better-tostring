@@ -39,6 +39,7 @@ trait CompilerApi {
   def createToString(clazz: Clazz, body: Tree): Method
   def addMethod(clazz: Clazz, method: Method): Clazz
   def methodNames(clazz: Clazz): List[String]
+  // better name: "is case class or object"
   def isCaseClass(clazz: Clazz): Boolean
   def isObject(clazz: Clazz): Boolean
 }
@@ -69,6 +70,7 @@ object BetterToStringImpl {
         isNested: Boolean,
         enclosingObject: Option[EnclosingObject]
       ): Clazz = {
+        // technically, the method found by this can be even something like "def toString(s: String): Unit", but we're ignoring that
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
         val shouldModify = isCaseClass(clazz) && !isNested && !hasToString
