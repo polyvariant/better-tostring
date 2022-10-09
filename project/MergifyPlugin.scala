@@ -20,7 +20,7 @@ object MergifyPlugin extends AutoPlugin {
 
       val jobs = (githubWorkflowOSes.value.toList, crossScalaVersions.value.toList, githubWorkflowJavaVersions.value.toList).mapN {
         case (os, sv, java) =>
-          s"Build and Test ($os, $sv, $java)"
+          s"Build and Test ($os, $sv, ${java.render})"
       }
 
       val mergify = circe
