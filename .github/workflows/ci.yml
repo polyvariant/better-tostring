@@ -49,7 +49,7 @@ jobs:
           - 3.2.0
           - 3.2.1-RC2
           - 3.2.1
-          - 3.3.0-rc1
+          - 3.3.0-RC1
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -363,12 +363,12 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.3.0-rc1)
+      - name: Download target directories (3.3.0-RC1)
         uses: actions/download-artifact@v2
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-rc1
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-RC1
 
-      - name: Inflate target directories (3.3.0-rc1)
+      - name: Inflate target directories (3.3.0-RC1)
         run: |
           tar xf targets.tar
           rm targets.tar
