@@ -69,7 +69,8 @@ val plugin = project
       val extraDirectoriesWithPredicates = Map[String, String => Boolean](
         ("scala-3.0.x", (_.startsWith("3.0"))),
         ("scala-3.1.x", (_.startsWith("3.1"))),
-        ("scala-3.2.x", (_.startsWith("3.2")))
+        ("scala-3.2.x", (_.startsWith("3.2"))),
+        ("scala-3.3.x", (_.startsWith("3.3")))
       )
 
       extraDirectoriesWithPredicates.collect {
