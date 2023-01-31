@@ -39,7 +39,7 @@ The plugin is currently published for the following Scala versions:
 - 2.13.5, 2.13.6, 2.13.7, 2.13.8, 2.13.9, 2.13.10
 - 3.0.0, 3.0.1, 3.0.2
 - 3.1.0, 3.1.1, 3.1.2, 3.1.3
-- 3.2.0, 3.2.1-RC2, 3.2.1
+- 3.2.0, 3.2.1-RC2, 3.2.1, 3.2.2
 - 3.3.0-RC1, 3.3.0-RC2
 <!-- SCALA VERSIONS END -->
 
