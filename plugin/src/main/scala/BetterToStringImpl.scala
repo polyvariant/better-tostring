@@ -26,22 +26,63 @@ trait CompilerApi {
   type Method
   type EnclosingObject
 
-  def className(clazz: Clazz): String
-  def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean
-  def enclosingObjectName(enclosingObject: EnclosingObject): String
-  def params(clazz: Clazz): List[Param]
-  def literalConstant(value: String): Tree
+  def className(
+    clazz: Clazz
+  ): String
 
-  def paramName(param: Param): ParamName
-  def selectInThis(clazz: Clazz, name: ParamName): Tree
-  def concat(l: Tree, r: Tree): Tree
+  def isPackageOrPackageObject(
+    enclosingObject: EnclosingObject
+  ): Boolean
 
-  def createToString(clazz: Clazz, body: Tree): Method
-  def addMethod(clazz: Clazz, method: Method): Clazz
-  def methodNames(clazz: Clazz): List[String]
+  def enclosingObjectName(
+    enclosingObject: EnclosingObject
+  ): String
+
+  def params(
+    clazz: Clazz
+  ): List[Param]
+
+  def literalConstant(
+    value: String
+  ): Tree
+
+  def paramName(
+    param: Param
+  ): ParamName
+
+  def selectInThis(
+    clazz: Clazz,
+    name: ParamName
+  ): Tree
+
+  def concat(
+    l: Tree,
+    r: Tree
+  ): Tree
+
+  def createToString(
+    clazz: Clazz,
+    body: Tree
+  ): Method
+
+  def addMethod(
+    clazz: Clazz,
+    method: Method
+  ): Clazz
+
+  def methodNames(
+    clazz: Clazz
+  ): List[String]
+
   // better name: "is case class or object"
-  def isCaseClass(clazz: Clazz): Boolean
-  def isObject(clazz: Clazz): Boolean
+  def isCaseClass(
+    clazz: Clazz
+  ): Boolean
+
+  def isObject(
+    clazz: Clazz
+  ): Boolean
+
 }
 
 trait BetterToStringImpl[+C <: CompilerApi] {
@@ -79,10 +120,16 @@ object BetterToStringImpl {
         else clazz
       }
 
-      private def overrideToString(clazz: Clazz, enclosingObject: Option[EnclosingObject]): Clazz =
+      private def overrideToString(
+        clazz: Clazz,
+        enclosingObject: Option[EnclosingObject]
+      ): Clazz =
         addMethod(clazz, createToString(clazz, toStringImpl(clazz, enclosingObject)))
 
-      private def toStringImpl(clazz: Clazz, enclosingObject: Option[EnclosingObject]): Tree = {
+      private def toStringImpl(
+        clazz: Clazz,
+        enclosingObject: Option[EnclosingObject]
+      ): Tree = {
         val className = api.className(clazz)
         val parentPrefix = enclosingObject.filterNot(api.isPackageOrPackageObject).fold("")(api.enclosingObjectName(_) ++ ".")
 

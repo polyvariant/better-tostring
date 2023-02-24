@@ -22,7 +22,9 @@ import scala.tools.nsc.plugins.Plugin
 import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.TypingTransformers
 
-final class BetterToStringPlugin(override val global: Global) extends Plugin {
+final class BetterToStringPlugin(
+  override val global: Global
+) extends Plugin {
   override val name: String = "better-tostring"
   override val description: String =
     "scala compiler plugin for better default toString implementations"
@@ -33,7 +35,10 @@ final class BetterToStringPlugin(override val global: Global) extends Plugin {
 
 }
 
-final class BetterToStringPluginComponent(val global: Global) extends PluginComponent with TypingTransformers {
+final class BetterToStringPluginComponent(
+  val global: Global
+) extends PluginComponent
+  with TypingTransformers {
   import global._
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: List[String] = List("parser")
@@ -41,7 +46,10 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
   private val api: Scala2CompilerApi[global.type] = Scala2CompilerApi.instance(global)
   private val impl = BetterToStringImpl.instance(api)
 
-  private def modifyClasses(tree: Tree, enclosingObject: Option[ModuleDef]): Tree =
+  private def modifyClasses(
+    tree: Tree,
+    enclosingObject: Option[ModuleDef]
+  ): Tree =
     tree match {
       case p: PackageDef => p.copy(stats = p.stats.map(modifyClasses(_, None)))
 
@@ -67,11 +75,19 @@ final class BetterToStringPluginComponent(val global: Global) extends PluginComp
       case other => other
     }
 
-  override def newPhase(prev: Phase): Phase = new StdPhase(prev) {
+  override def newPhase(
+    prev: Phase
+  ): Phase = new StdPhase(prev) {
 
-    override def apply(unit: CompilationUnit): Unit =
+    override def apply(
+      unit: CompilationUnit
+    ): Unit =
       new Transformer {
-        override def transform(tree: Tree): Tree = modifyClasses(tree, None)
+
+        override def transform(
+          tree: Tree
+        ): Tree = modifyClasses(tree, None)
+
       }.transformUnit(unit)
 
   }

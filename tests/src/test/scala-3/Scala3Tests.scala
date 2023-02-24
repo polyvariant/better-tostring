@@ -66,9 +66,17 @@ enum ScalaVersion:
 
 enum EnumCustomTostring:
   case SimpleCase
-  case ParameterizedCase(value: String)
+
+  case ParameterizedCase(
+    value: String
+  )
+
   override def toString: String = "example"
 
 enum User:
-  case LoggedIn(name: String)
+
+  case LoggedIn(
+    name: String
+  )
+
   case Unauthorized

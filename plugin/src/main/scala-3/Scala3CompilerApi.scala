@@ -43,31 +43,64 @@ trait Scala3CompilerApi extends CompilerApi:
   type EnclosingObject = Symbols.Symbol
 
 object Scala3CompilerApi:
-  final case class ClassContext(t: Template, clazz: ClassSymbol):
-    def mapTemplate(f: Template => Template): ClassContext = copy(t = f(t))
 
-  def instance(using Context): Scala3CompilerApi = new Scala3CompilerApi:
+  final case class ClassContext(
+    t: Template,
+    clazz: ClassSymbol
+  ):
 
-    def params(clazz: Clazz): List[Param] =
+    def mapTemplate(
+      f: Template => Template
+    ): ClassContext = copy(t = f(t))
+
+  def instance(
+    using Context
+  ): Scala3CompilerApi = new Scala3CompilerApi:
+
+    def params(
+      clazz: Clazz
+    ): List[Param] =
       clazz.t.body.collect {
         case v: ValDef if v.mods.is(CaseAccessor) => v
       }
 
-    def className(clazz: Clazz): String =
+    def className(
+      clazz: Clazz
+    ): String =
       clazz.clazz.originalName.toString
 
-    def isPackageOrPackageObject(enclosingObject: EnclosingObject): Boolean =
+    def isPackageOrPackageObject(
+      enclosingObject: EnclosingObject
+    ): Boolean =
       enclosingObject.is(Package) || enclosingObject.isPackageObject
 
-    def enclosingObjectName(enclosingObject: EnclosingObject): String =
+    def enclosingObjectName(
+      enclosingObject: EnclosingObject
+    ): String =
       enclosingObject.effectiveName.toString
 
-    def literalConstant(value: String): Tree = Literal(Constant(value))
-    def paramName(param: Param): ParamName = param.name
-    def selectInThis(clazz: Clazz, name: ParamName): Tree = This(clazz.clazz).select(name)
-    def concat(l: Tree, r: Tree): Tree = l.select("+".toTermName).appliedTo(r)
+    def literalConstant(
+      value: String
+    ): Tree = Literal(Constant(value))
 
-    def createToString(owner: Clazz, body: Tree): Method = {
+    def paramName(
+      param: Param
+    ): ParamName = param.name
+
+    def selectInThis(
+      clazz: Clazz,
+      name: ParamName
+    ): Tree = This(clazz.clazz).select(name)
+
+    def concat(
+      l: Tree,
+      r: Tree
+    ): Tree = l.select("+".toTermName).appliedTo(r)
+
+    def createToString(
+      owner: Clazz,
+      body: Tree
+    ): Method = {
       val clazz = owner.clazz
       // this was adapted from dotty.tools.dotc.transform.SyntheticMembers (line 115)
       val sym = Symbols.defn.Any_toString
@@ -85,20 +118,29 @@ object Scala3CompilerApi:
       DefDef(toStringSymbol, body)
     }
 
-    def addMethod(clazz: Clazz, method: Method): Clazz =
+    def addMethod(
+      clazz: Clazz,
+      method: Method
+    ): Clazz =
       clazz.mapTemplate(t => cpy.Template(t)(body = t.body :+ method))
 
     // note: also returns vals because why not
-    def methodNames(clazz: Clazz): List[String] =
+    def methodNames(
+      clazz: Clazz
+    ): List[String] =
       clazz.t.body.collect { case d: (DefDef | ValDef) =>
         d.name.toString
       }
 
-    def isCaseClass(clazz: Clazz): Boolean =
+    def isCaseClass(
+      clazz: Clazz
+    ): Boolean =
       // for some reason, this is true for case objects too
       clazz.clazz.flags.is(CaseClass)
 
-    def isObject(clazz: Clazz): Boolean =
+    def isObject(
+      clazz: Clazz
+    ): Boolean =
       clazz.clazz.flags.is(Module)
 
 end Scala3CompilerApi

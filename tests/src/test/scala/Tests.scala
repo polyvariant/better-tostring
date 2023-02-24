@@ -149,34 +149,64 @@ case object CaseObjectWithToStringVal {
   override val toString: String = "example"
 }
 
-final case class SimpleCaseClass(name: String, age: Int)
-final case class MultiParameterList(name: String, age: Int)(val s: String)
+final case class SimpleCaseClass(
+  name: String,
+  age: Int
+)
 
-final case class CustomTostring(name: String) {
+final case class MultiParameterList(
+  name: String,
+  age: Int
+)(
+  val s: String
+)
+
+final case class CustomTostring(
+  name: String
+) {
   override def toString: String = "***"
 }
 
-final case class CustomTostringVal(name: String) {
+final case class CustomTostringVal(
+  name: String
+) {
   override val toString: String = "***"
 }
 
-final case class HasOtherConstructors(s: String) {
-  def this(a: Int) = this(a.toString + " beers")
+final case class HasOtherConstructors(
+  s: String
+) {
+  def this(
+    a: Int
+  ) = this(a.toString + " beers")
 }
 
-final class NestedParent() {
-  case class NestedChild(name: String)
+final class NestedParent(
+) {
+
+  case class NestedChild(
+    name: String
+  )
+
 }
 
 object ObjectNestedParent {
-  case class ObjectNestedClass(name: String)
+
+  case class ObjectNestedClass(
+    name: String
+  )
+
   case object ObjectNestedObject
 }
 
 final class DeeplyNestedInClassGrandparent {
 
   object DeeplyNestedInClassParent {
-    case class DeeplyNestedInClassClass(name: String)
+
+    case class DeeplyNestedInClassClass(
+      name: String
+    )
+
   }
 
 }
@@ -184,7 +214,9 @@ final class DeeplyNestedInClassGrandparent {
 object MethodLocalWrapper {
 
   def methodLocalClassStringify: String = {
-    final case class LocalClass(name: String)
+    final case class LocalClass(
+      name: String
+    )
 
     LocalClass("a").toString()
   }
@@ -192,11 +224,17 @@ object MethodLocalWrapper {
 }
 
 trait HasToString {
-  override def toString(): String = "defined in superclass"
+  override def toString(
+  ): String = "defined in superclass"
 }
 
-case class HasInheritedToString(i: Int) extends HasToString
+case class HasInheritedToString(
+  i: Int
+) extends HasToString
 
-case class HasInheritedAndCustomToString(i: Int) extends HasToString {
-  override def toString(): String = "defined in child"
+case class HasInheritedAndCustomToString(
+  i: Int
+) extends HasToString {
+  override def toString(
+  ): String = "defined in child"
 }

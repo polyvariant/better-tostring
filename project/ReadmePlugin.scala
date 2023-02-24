@@ -14,7 +14,9 @@ object ReadmePlugin extends AutoPlugin {
     readmeGenerate := Def.task {
       val template = IO.read(file("README.md"))
 
-      def pattern(inside: String) = s"""<!-- SCALA VERSIONS START -->$inside<!-- SCALA VERSIONS END -->"""
+      def pattern(
+        inside: String
+      ) = s"""<!-- SCALA VERSIONS START -->$inside<!-- SCALA VERSIONS END -->"""
 
       val groups = List("2.12", "2.13", "3.0", "3.1", "3.2", "3.3")
 

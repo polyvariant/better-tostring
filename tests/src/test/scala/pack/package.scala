@@ -15,5 +15,9 @@
  */
 
 package object pack {
-  case class InPackageObject(name: String)
+
+  case class InPackageObject(
+    name: String
+  )
+
 }

@@ -31,14 +31,21 @@ import tpd.*
 final class BetterToStringPlugin extends StandardPlugin:
   override val name: String = "better-tostring"
   override val description: String = "scala compiler plugin for better default toString implementations"
-  override def init(options: List[String]): List[PluginPhase] = List(new BetterToStringPluginPhase)
+
+  override def init(
+    options: List[String]
+  ): List[PluginPhase] = List(new BetterToStringPluginPhase)
 
 final class BetterToStringPluginPhase extends PluginPhase:
 
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: Set[String] = Set(org.polyvariant.AfterPhase.name)
 
-  override def transformTemplate(t: Template)(using ctx: Context): Tree =
+  override def transformTemplate(
+    t: Template
+  )(
+    using ctx: Context
+  ): Tree =
     val clazz = ctx.owner.asClass
 
     val ownerOwner = ctx.owner.owner
