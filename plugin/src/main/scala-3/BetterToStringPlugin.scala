@@ -38,7 +38,11 @@ final class BetterToStringPluginPhase extends PluginPhase:
   override val phaseName: String = "better-tostring-phase"
   override val runsAfter: Set[String] = Set(org.polyvariant.AfterPhase.name)
 
-  override def transformTemplate(t: Template)(using ctx: Context): Tree =
+  override def transformTemplate(
+    t: Template
+  )(
+    using ctx: Context
+  ): Tree =
     val clazz = ctx.owner.asClass
 
     val ownerOwner = ctx.owner.owner
