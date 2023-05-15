@@ -53,6 +53,9 @@ jobs:
           - 3.3.0-RC1
           - 3.3.0-RC2
           - 3.3.0-RC3
+          - 3.3.0-RC4
+          - 3.3.0-RC5
+          - 3.3.0-RC6
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -402,6 +405,36 @@ jobs:
           name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-RC3
 
       - name: Inflate target directories (3.3.0-RC3)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.3.0-RC4)
+        uses: actions/download-artifact@v3
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-RC4
+
+      - name: Inflate target directories (3.3.0-RC4)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.3.0-RC5)
+        uses: actions/download-artifact@v3
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-RC5
+
+      - name: Inflate target directories (3.3.0-RC5)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.3.0-RC6)
+        uses: actions/download-artifact@v3
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-RC6
+
+      - name: Inflate target directories (3.3.0-RC6)
         run: |
           tar xf targets.tar
           rm targets.tar
