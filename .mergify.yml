@@ -3,32 +3,15 @@ pull_request_rules:
   conditions:
   - author=scala-steward
   - body~=labels:.*semver-patch.*
-  - status-success="Build and Test (ubuntu-latest, 2.12.13, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 2.12.14, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 2.12.15, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 2.12.17, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 2.13.5, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 2.13.6, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 2.13.7, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 2.13.8, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 2.13.9, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 2.13.10, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.0.0, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.0.1, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 3.0.2, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.1.0, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.1.1, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.1.2, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 3.1.3, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.2.0, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.2.1-RC2, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.2.1, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 3.2.2, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.3.0-RC1, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.3.0-RC2, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.3.0-RC3, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.3.0-RC4, temurin@8)"
-  - status-success="Build and Test (ubuntu-latest, 3.3.0-RC5, temurin@8)"
   - status-success="Build and Test (ubuntu-latest, 3.3.0-RC6, temurin@8)"
   actions:
     merge:
