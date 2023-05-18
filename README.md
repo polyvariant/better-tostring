@@ -30,6 +30,12 @@ In sbt:
 libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % version cross CrossVersion.full)
 ```
 
+In scala-cli:
+
+```scala
+//> using plugin "org.polyvariant:::better-tostring:version"
+```
+
 (note: versions before `0.3.8` were published under the `com.kubukoz` organization instead of `org.polyvariant`)
 
 The plugin is currently published for the following Scala versions:
