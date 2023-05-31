@@ -19,7 +19,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 // for dottydoc
 ThisBuild / resolvers += Resolver.JCenterRepository
 
-ThisBuild / scalaVersion := "3.0.0"
+ThisBuild / scalaVersion := "3.3.0"
 ThisBuild / crossScalaVersions := IO.read(file("scala-versions")).split("\n").map(_.trim)
 
 ThisBuild / githubWorkflowEnv ++= List(
