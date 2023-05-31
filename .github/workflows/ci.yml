@@ -29,17 +29,17 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala:
-              - 2.12.14
-              - 2.12.15
-              - 2.12.17
-              - 2.13.8
-              - 2.13.9
-              - 2.13.10
-              - 3.0.2
-              - 3.1.3
-              - 3.2.2
-              - 3.3.0-RC6
-              - 3.3.0
+          - 2.12.14
+          - 2.12.15
+          - 2.12.17
+          - 2.13.8
+          - 2.13.9
+          - 2.13.10
+          - 3.0.2
+          - 3.1.3
+          - 3.2.2
+          - 3.3.0-RC6
+          - 3.3.0
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -116,6 +116,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        scala: [3.0.0]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -274,4 +275,4 @@ jobs:
           (echo "$PGP_PASSPHRASE"; echo; echo) | gpg --command-fd 0 --pinentry-mode loopback --change-passphrase $(gpg --list-secret-keys --with-colons 2> /dev/null | grep '^sec:' | cut --delimiter ':' --fields 5 | tail -n 1)
 
       - name: Publish
-        run: sbt tlCiRelease
+        run: sbt '++ ${{ matrix.scala }}' tlCiRelease
