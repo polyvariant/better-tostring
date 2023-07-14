@@ -46,7 +46,9 @@ object Scala3CompilerApi:
   final case class ClassContext(t: Template, clazz: ClassSymbol):
     def mapTemplate(f: Template => Template): ClassContext = copy(t = f(t))
 
-  def instance(using Context): Scala3CompilerApi = new Scala3CompilerApi:
+  def instance(
+    using Context
+  ): Scala3CompilerApi = new Scala3CompilerApi:
 
     def params(clazz: Clazz): List[Param] =
       clazz.t.body.collect {
