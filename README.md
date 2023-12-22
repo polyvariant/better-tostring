@@ -43,10 +43,10 @@ The plugin is currently published for the following Scala versions:
 <!-- SCALA VERSIONS START -->
 - 2.12.15, 2.12.17, 2.12.18
 - 2.13.10, 2.13.11, 2.13.12
-- 3.0.2
 - 3.1.3
 - 3.2.2
-- 3.3.0-RC6, 3.3.0, 3.3.1-RC1, 3.3.1
+- 3.3.0-RC6, 3.3.0, 3.3.1-RC1, 3.3.1, 3.3.2-RC1
+- 3.4.0-RC1
 <!-- SCALA VERSIONS END -->
 
 For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/org/polyvariant) ([or even older versions](https://repo1.maven.org/maven2/com/kubukoz)).

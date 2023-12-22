@@ -67,10 +67,10 @@ val plugin = project
     ),
     Compile / unmanagedSourceDirectories ++= {
       val extraDirectoriesWithPredicates = Map[String, String => Boolean](
-        ("scala-3.0.x", (_.startsWith("3.0"))),
         ("scala-3.1.x", (_.startsWith("3.1"))),
         ("scala-3.2.x", (_.startsWith("3.2"))),
-        ("scala-3.3.x", (_.startsWith("3.3")))
+        ("scala-3.3.x", (_.startsWith("3.3"))),
+        ("scala-3.4.x", (_.startsWith("3.4")))
       )
 
       extraDirectoriesWithPredicates.collect {
