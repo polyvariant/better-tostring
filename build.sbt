@@ -106,7 +106,7 @@ val betterToString =
     .settings(
       commonSettings,
       (publish / skip) := true,
-      addCommandAlias("generateAll", List("githubWorkflowGenerate", "mergifyWrite", "readmeWrite").mkString(";"))
+      addCommandAlias("generateAll", List("githubWorkflowGenerate", "mergifyWrite", "readmeWrite", "headerCreateAll").mkString(";"))
     )
     .aggregate(plugin, tests)
     .enablePlugins(NoPublishPlugin)
