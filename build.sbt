@@ -31,6 +31,8 @@ ThisBuild / githubWorkflowEnv ++= List(
   envKey -> s"$${{ secrets.$envKey }}"
 }.toMap
 
+ThisBuild / githubWorkflowPublishTargetBranches := List(RefPredicate.StartsWith(Ref.Tag("v")))
+
 ThisBuild / githubWorkflowGeneratedCI ~= {
   _.map {
     case job if job.id == "build" =>
