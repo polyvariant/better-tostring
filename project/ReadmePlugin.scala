@@ -26,7 +26,7 @@ object ReadmePlugin extends AutoPlugin {
         .map { prefix =>
           "- " + versionsGrouped(prefix).mkString(", ")
         }
-        .mkString("\n")
+        .mkString(s"The plugin is currently published for the following ${crossScalaVersions.value.size} Scala versions:\n\n", "\n", "")
 
       pattern("(?s)(.+)").r.replaceAllIn(template, pattern(s"\n$versionsString\n"))
     }.value,
