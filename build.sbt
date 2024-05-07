@@ -67,18 +67,9 @@ val plugin = project
         else "scala-compiler"
       ) % scalaVersion.value
     ),
-    Compile / unmanagedSourceDirectories ++= {
-      val extraDirectoriesWithPredicates = Map[String, String => Boolean](
-        ("scala-3.1.x", (_.startsWith("3.1"))),
-        ("scala-3.2.x", (_.startsWith("3.2"))),
-        ("scala-3.3.x", (_.startsWith("3.3"))),
-        ("scala-3.4.x", (_.startsWith("3.4")))
-      )
-
-      extraDirectoriesWithPredicates.collect {
-        case (dir, predicate) if predicate(scalaVersion.value) =>
-          sourceDirectory.value / "main" / dir
-      }.toList
+    // 3.3.x -> "scala-3.3.x"
+    Compile / unmanagedSourceDirectories += {
+      sourceDirectory.value / "main" / s"scala-${scalaVersion.value.split("\\.").take(2).mkString(".")}.x"
     }
   )
   .enablePlugins(BackpublishPlugin)
