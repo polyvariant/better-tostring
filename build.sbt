@@ -7,12 +7,11 @@ ThisBuild / developers := List(
   tlGitHubDev("kubukoz", "Jakub Kozłowski"),
   tlGitHubDev("majk-p", "Michał Pawlik")
 )
-ThisBuild / tlSonatypeUseLegacyHost := false
+ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 ThisBuild / tlFatalWarnings := false
-ThisBuild / tlFatalWarningsInCi := false
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -36,10 +35,10 @@ ThisBuild / githubWorkflowPublishTargetBranches := List(RefPredicate.StartsWith(
 ThisBuild / githubWorkflowGeneratedCI ~= {
   _.map {
     case job if job.id == "build" =>
-      job.copy(
-        steps = job.steps.map {
+      job.withSteps(
+        job.steps.map {
           case step: WorkflowStep.Sbt if step.name == Some("Check that workflows are up to date") =>
-            step.copy(commands = List("githubWorkflowCheck", "mergifyCheck", "readmeCheck"))
+            step.withCommands(List("githubWorkflowCheck", "mergifyCheck", "readmeCheck"))
           case step                                                                               => step
         }
       )
