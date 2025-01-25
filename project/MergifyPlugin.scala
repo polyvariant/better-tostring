@@ -32,7 +32,7 @@ object MergifyPlugin extends AutoPlugin {
               "name" := "Automatically merge Scala Steward PRs on CI success",
               "conditions" :=
                 "author=scala-steward" +:
-                  "body~=labels:.*semver-patch.*" +:
+                  "body~=labels:.*semver-spec-patch.*" +:
                   jobs.map { job =>
                     s"""status-success="$job""""
                   },
