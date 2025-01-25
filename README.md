@@ -27,13 +27,13 @@ User("Joe", 18).toString() // "User(name = Joe, age = 18)"
 In sbt:
 
 ```scala
-libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % version cross CrossVersion.full)
+libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % 0.3.17 cross CrossVersion.full)
 ```
 
 In scala-cli:
 
 ```scala
-//> using plugin "org.polyvariant:::better-tostring:version"
+//> using plugin "org.polyvariant:::better-tostring:0.3.17"
 ```
 
 (note: versions before `0.3.8` were published under the `com.kubukoz` organization instead of `org.polyvariant`)
