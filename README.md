@@ -27,13 +27,13 @@ User("Joe", 18).toString() // "User(name = Joe, age = 18)"
 In sbt:
 
 ```scala
-libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % version cross CrossVersion.full)
+libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % "0.3.17" cross CrossVersion.full)
 ```
 
 In scala-cli:
 
 ```scala
-//> using plugin "org.polyvariant:::better-tostring:version"
+//> using plugin "org.polyvariant:::better-tostring:0.3.17"
 ```
 
 (note: versions before `0.3.8` were published under the `com.kubukoz` organization instead of `org.polyvariant`)
@@ -41,12 +41,12 @@ In scala-cli:
 <!-- SCALA VERSIONS START -->
 The plugin is currently published for the following 21 Scala versions:
 
-- 2.12.15, 2.12.17, 2.12.18, 2.12.19
-- 2.13.10, 2.13.11, 2.13.12, 2.13.13, 2.13.14
-- 3.1.3
-- 3.2.2
-- 3.3.0-RC6, 3.3.0, 3.3.1-RC1, 3.3.1, 3.3.2-RC1, 3.3.3
-- 3.4.0-RC1, 3.4.0, 3.4.1-RC1, 3.4.1
+- 2.12.18, 2.12.19, 2.12.20
+- 2.13.12, 2.13.13, 2.13.14, 2.13.15, 2.13.16
+- 3.3.0, 3.3.1, 3.3.3, 3.3.4
+- 3.4.0, 3.4.1, 3.4.2, 3.4.3
+- 3.5.0, 3.5.1, 3.5.2
+- 3.6.2, 3.6.3
 <!-- SCALA VERSIONS END -->
 
 For older Scala versions, see [previous versions of better-tostring](https://repo1.maven.org/maven2/org/polyvariant) ([or even older versions](https://repo1.maven.org/maven2/com/kubukoz)).
@@ -80,15 +80,7 @@ If you need a different `toString`, we suggest that you implement one yourself. 
 
 ## Contributing
 
-If you want to add a new feature, check if it's already been discussed in the issues list.
-
-Before you start working on an existing feature / bugfix, let us know you're taking it on in its comments :)
-
-To add a new Scala version:
-
-1. Add it to `./scala-versions`
-2. Run `sbt generateAll`
-3. Commit and open a pull request.
+See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## Maintainers
 
