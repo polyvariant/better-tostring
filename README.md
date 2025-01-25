@@ -27,7 +27,7 @@ User("Joe", 18).toString() // "User(name = Joe, age = 18)"
 In sbt:
 
 ```scala
-libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % 0.3.17 cross CrossVersion.full)
+libraryDependencies += compilerPlugin("org.polyvariant" % "better-tostring" % "0.3.17" cross CrossVersion.full)
 ```
 
 In scala-cli:
