@@ -3,5 +3,5 @@ addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.13.1")
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % "0.14.10",
-  "io.circe" %% "circe-yaml" % "0.14.2"
+  "io.circe" %% "circe-yaml" % "0.15.2"
 )
