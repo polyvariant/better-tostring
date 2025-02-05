@@ -6,7 +6,7 @@ import sbt.ThisBuild
 
 /** Allows publishing an existing version for a new version of Scala. Usage:
   * {{{
-  * BACKPUBLISH_VERSION=2.12.17 PROJECT_VERSION=0.3.17 sbt tlRelease
+  * BACKPUBLISH_VERSION=2.12.17 PROJECT_VERSION=0.3.17 sbt clean tlRelease
   * }}}
   */
 object BackpublishPlugin extends AutoPlugin {
