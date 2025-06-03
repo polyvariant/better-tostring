@@ -39,9 +39,13 @@ trait CompilerApi {
   def createToString(clazz: Clazz, body: Tree): Method
   def addMethod(clazz: Clazz, method: Method): Clazz
   def methodNames(clazz: Clazz): List[String]
-  // better name: "is case class or object"
-  def isCaseClass(clazz: Clazz): Boolean
+  def isViableDefinition(clazz: Clazz): Boolean
+  def isEnum(clazz: Clazz): Boolean
   def isObject(clazz: Clazz): Boolean
+  def productPrefixParam: ParamName
+
+  // debugging
+  def report(str: String): Unit
 }
 
 trait BetterToStringImpl[+C <: CompilerApi] {
@@ -73,7 +77,7 @@ object BetterToStringImpl {
         // technically, the method found by this can be even something like "def toString(s: String): Unit", but we're ignoring that
         val hasToString: Boolean = methodNames(clazz).contains("toString")
 
-        val shouldModify = isCaseClass(clazz) && !isNested && !hasToString
+        val shouldModify = isViableDefinition(clazz) && !isNested && !hasToString
 
         if (shouldModify) overrideToString(clazz, enclosingObject)
         else clazz
@@ -101,6 +105,7 @@ object BetterToStringImpl {
 
         val paramParts =
           if (api.isObject(clazz)) Nil
+          else if (api.isEnum(clazz)) List(literalConstant("."), selectInThis(clazz, productPrefixParam))
           else
             List(
               List(literalConstant("(")),
