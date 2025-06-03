@@ -7,8 +7,6 @@ ThisBuild / developers := List(
   tlGitHubDev("kubukoz", "Jakub Kozłowski"),
   tlGitHubDev("majk-p", "Michał Pawlik")
 )
-ThisBuild / sonatypeCredentialHost := Sonatype.sonatype01
-
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 ThisBuild / tlFatalWarnings := false
