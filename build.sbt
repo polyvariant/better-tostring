@@ -36,7 +36,7 @@ ThisBuild / githubWorkflowGeneratedCI ~= {
       job.withSteps(
         job.steps.map {
           case step: WorkflowStep.Sbt if step.name == Some("Check that workflows are up to date") =>
-            step.withCommands(List("githubWorkflowCheck", "mergifyCheck", "readmeCheck"))
+            step.withCommands(List("githubWorkflowCheck", "readmeCheck"))
           case step                                                                               => step
         }
       )
@@ -95,9 +95,8 @@ val betterToString =
     .settings(
       commonSettings,
       (publish / skip) := true,
-      addCommandAlias("generateAll", List("githubWorkflowGenerate", "mergifyWrite", "readmeWrite").mkString(";"))
+      addCommandAlias("generateAll", List("githubWorkflowGenerate", "mergifyGenerate", "readmeWrite").mkString(";"))
     )
     .aggregate(plugin, tests)
     .enablePlugins(NoPublishPlugin)
-    .enablePlugins(MergifyPlugin)
     .enablePlugins(ReadmePlugin)
