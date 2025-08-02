@@ -1,0 +1,79 @@
+name: Add Scala Version
+on:
+  workflow_dispatch:
+    inputs:
+      scala_version:
+        description: "Scala version to add"
+        required: true
+        type: string
+      project_version:
+        description: "Project version to re-publish for the given Scala version"
+        required: true
+        type: string
+        default: "0.3.17"
+jobs:
+  add-version:
+    env:
+      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+      PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+      PGP_SECRET: ${{ secrets.PGP_SECRET }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get app token
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          permission-checks: write
+          app-id: 1713989
+          private-key: ${{ secrets.SCALA_UPDATER_PRIVATE_KEY }}
+
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
+      - id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java and Scala
+        uses: coursier/setup-action@v1
+        with:
+          jvm: temurin:1.23
+          apps: sbt
+
+      - name: Import signing key
+        if: env.PGP_SECRET != '' && env.PGP_PASSPHRASE == ''
+        env:
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+        run: echo $PGP_SECRET | base64 -d -i - | gpg --import
+
+      - name: Import signing key and strip passphrase
+        if: env.PGP_SECRET != '' && env.PGP_PASSPHRASE != ''
+        env:
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+        run: |
+          echo "$PGP_SECRET" | base64 -d -i - > /tmp/signing-key.gpg
+          echo "$PGP_PASSPHRASE" | gpg --pinentry-mode loopback --passphrase-fd 0 --import /tmp/signing-key.gpg
+          (echo "$PGP_PASSPHRASE"; echo; echo) | gpg --command-fd 0 --pinentry-mode loopback --change-passphrase $(gpg --list-secret-keys --with-colons 2> /dev/null | grep '^sec:' | cut --delimiter ':' --fields 5 | tail -n 1)
+
+      - name: Commit new version support
+        run: |
+          gpg --list-keys
+          echo "${{inputs.scala_version}}" >> scala-versions
+          sbt "generateAll;++${{inputs.scala_version}} test"
+          git add --all
+          git commit -m "Add ${{inputs.scala_version}} support"
+      - name: Publish new version
+        env:
+          BACKPUBLISH_VERSION: ${{inputs.scala_version}}
+          PROJECT_VERSION: ${{inputs.project_version}}
+        run: |
+          git push
+          sbt clean tlCiRelease
