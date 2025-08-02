@@ -49,6 +49,7 @@ jobs:
 
       - name: Commit new version support
         run: |
+          gpg --list-keys
           echo "$BACKPUBLISH_VERSION" >> scala-versions
           sbt "generateAll;++$BACKPUBLISH_VERSION test"
           git config --global user.name "Scala Version Add Workflow[bot]"

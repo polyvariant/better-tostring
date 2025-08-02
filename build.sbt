@@ -8,7 +8,7 @@ ThisBuild / developers := List(
   tlGitHubDev("majk-p", "Michał Pawlik")
 )
 Global / onChangedBuildSource := ReloadOnSourceChanges
-
+githubWorkflowDefinition
 ThisBuild / tlFatalWarnings := false
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
