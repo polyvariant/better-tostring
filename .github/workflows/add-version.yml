@@ -33,7 +33,7 @@ jobs:
           git config --global user.name "Scala Version Add Workflow[bot]"
           git config --global user.email "Scala Version Add Workflow[bot]@users.noreply.github.com"
           git add --all
-          git commmit -a "Add $BACKPUBLISH_VERSION"
+          git commit -a "Add $BACKPUBLISH_VERSION"
       - name: Publish new version
         run: |
           sbt clean tlRelease
