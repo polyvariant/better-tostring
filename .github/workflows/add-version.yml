@@ -1,0 +1,39 @@
+on:
+  workflow_dispatch:
+    inputs:
+      scala_version:
+        description: "Scala version to add"
+        required: true
+        type: string
+      project_version:
+        description: "Project version to re-publish for the given Scala version"
+        required: true
+        type: string
+        default: "0.3.17"
+  push:
+jobs:
+  add-version:
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java and Scala
+        uses: coursier/setup-action@v1
+        with:
+          jvm: temurin:1.23
+          apps: sbt
+
+      - name: Commit new version support and publish it
+        run: |
+          export BACKPUBLISH_VERSION="${{inputs.scala_version}}"
+          export PROJECT_VERSION="${{inputs.project_version}}"
+
+          echo "$BACKPUBLISH_VERSION" >> scala-versions
+          sbt "generateAll;$BACKPUBLISH_VERSION test"
+          git config --global user.name "Scala Version Add Workflow[bot]"
+          git config --global user.email "Scala Version Add Workflow[bot]@users.noreply.github.com"
+          git add --all
+          git commmit -a "Add $BACKPUBLISH_VERSION"
+          sbt clean tlRelease
+          git push
