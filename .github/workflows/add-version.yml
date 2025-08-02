@@ -13,8 +13,6 @@ on:
 jobs:
   add-version:
     env:
-      BACKPUBLISH_VERSION: ${{inputs.scala_version}}
-      PROJECT_VERSION: ${{inputs.project_version}}
       SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
       SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
       PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
@@ -74,6 +72,9 @@ jobs:
           git add --all
           git commit -m "Add $BACKPUBLISH_VERSION"
       - name: Publish new version
+        env:
+          BACKPUBLISH_VERSION: ${{inputs.scala_version}}
+          PROJECT_VERSION: ${{inputs.project_version}}
         run: |
           # todo
           # sbt clean tlCiRelease
