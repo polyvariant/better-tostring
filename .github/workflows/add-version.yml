@@ -66,8 +66,7 @@ jobs:
         run: |
           gpg --list-keys
           echo "${{inputs.scala_version}}" >> scala-versions
-          # todo
-          # sbt "generateAll;++${{inputs.scala_version}} test"
+          sbt "generateAll;++${{inputs.scala_version}} test"
           git add --all
           git commit -m "Add ${{inputs.scala_version}} support"
       - name: Publish new version
@@ -75,6 +74,5 @@ jobs:
           BACKPUBLISH_VERSION: ${{inputs.scala_version}}
           PROJECT_VERSION: ${{inputs.project_version}}
         run: |
-          # todo
-          # sbt clean tlCiRelease
           git push
+          sbt clean tlCiRelease
