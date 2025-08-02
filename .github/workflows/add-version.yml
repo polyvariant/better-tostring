@@ -21,6 +21,14 @@ jobs:
       PGP_SECRET: ${{ secrets.PGP_SECRET }}
     runs-on: ubuntu-latest
     steps:
+      - name: Get app token
+        uses: actions/create-github-app-token@v1
+        id: get-app-token
+        with:
+          permission-checks: write
+          app-id: 1713989
+          private-key: ${{ secrets.SCALA_UPDATER_PRIVATE_KEY }}
+
       - id: checkout
         uses: actions/checkout@v4
 
@@ -51,12 +59,15 @@ jobs:
         run: |
           gpg --list-keys
           echo "$BACKPUBLISH_VERSION" >> scala-versions
-          sbt "generateAll;++$BACKPUBLISH_VERSION test"
+          sbt "generateAll"
+          # todo
+          # sbt "generateAll;++$BACKPUBLISH_VERSION test"
           git config --global user.name "Scala Version Add Workflow[bot]"
           git config --global user.email "Scala Version Add Workflow[bot]@users.noreply.github.com"
           git add --all
           git commit -m "Add $BACKPUBLISH_VERSION"
       - name: Publish new version
         run: |
-          sbt clean tlCiRelease
+          # todo
+          # sbt clean tlCiRelease
           git push
