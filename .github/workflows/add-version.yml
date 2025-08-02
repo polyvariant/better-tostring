@@ -15,6 +15,10 @@ jobs:
     env:
       BACKPUBLISH_VERSION: ${{inputs.scala_version}}
       PROJECT_VERSION: ${{inputs.project_version}}
+      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+      PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+      PGP_SECRET: ${{ secrets.PGP_SECRET }}
     runs-on: ubuntu-latest
     steps:
       - id: checkout
