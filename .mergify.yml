@@ -36,6 +36,7 @@ pull_request_rules:
   - status-success=Test (ubuntu-22.04, 3.6.4, temurin@8)
   - status-success=Test (ubuntu-22.04, 3.7.0, temurin@8)
   - status-success=Test (ubuntu-22.04, 3.7.1, temurin@8)
+  - status-success=Test (ubuntu-22.04, 3.7.2-RC1, temurin@8)
   - status-success=Test (ubuntu-22.04, 3.7.2-RC2, temurin@8)
   - status-success=Test (ubuntu-22.04, 3.7.2, temurin@8)
   actions:

@@ -40,6 +40,8 @@ jobs:
 
       - id: checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Java and Scala
         uses: coursier/setup-action@v1
@@ -68,6 +70,7 @@ jobs:
         run: |
           gpg --list-keys
           echo "${{inputs.scala_version}}" >> scala-versions
+          echo "foo" >> .github/workflows/ci.yml
           sbt "generateAll;++${{inputs.scala_version}} test"
           git add --all
           git commit -m "Add ${{inputs.scala_version}} support"
