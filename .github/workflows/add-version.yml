@@ -65,12 +65,11 @@ jobs:
       - name: Commit new version support
         run: |
           gpg --list-keys
-          echo "$BACKPUBLISH_VERSION" >> scala-versions
-          sbt "generateAll"
+          echo "${{inputs.scala_version}}" >> scala-versions
           # todo
-          # sbt "generateAll;++$BACKPUBLISH_VERSION test"
+          # sbt "generateAll;++${{inputs.scala_version}} test"
           git add --all
-          git commit -m "Add $BACKPUBLISH_VERSION"
+          git commit -m "Add ${{inputs.scala_version}} support"
       - name: Publish new version
         env:
           BACKPUBLISH_VERSION: ${{inputs.scala_version}}
