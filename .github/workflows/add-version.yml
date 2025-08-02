@@ -57,5 +57,5 @@ jobs:
           git commit -m "Add $BACKPUBLISH_VERSION"
       - name: Publish new version
         run: |
-          sbt clean tlRelease
+          sbt clean tlCiRelease
           git push
