@@ -1,3 +1,4 @@
+name: Add Scala Version
 on:
   workflow_dispatch:
     inputs:
