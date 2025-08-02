@@ -10,9 +10,11 @@ on:
         required: true
         type: string
         default: "0.3.17"
-  push:
 jobs:
   add-version:
+    env:
+      BACKPUBLISH_VERSION: ${{inputs.scala_version}}
+      PROJECT_VERSION: ${{inputs.project_version}}
     runs-on: ubuntu-latest
     steps:
       - id: checkout
@@ -24,16 +26,15 @@ jobs:
           jvm: temurin:1.23
           apps: sbt
 
-      - name: Commit new version support and publish it
+      - name: Commit new version support
         run: |
-          export BACKPUBLISH_VERSION="${{inputs.scala_version}}"
-          export PROJECT_VERSION="${{inputs.project_version}}"
-
           echo "$BACKPUBLISH_VERSION" >> scala-versions
-          sbt "generateAll;$BACKPUBLISH_VERSION test"
+          sbt "generateAll;++$BACKPUBLISH_VERSION test"
           git config --global user.name "Scala Version Add Workflow[bot]"
           git config --global user.email "Scala Version Add Workflow[bot]@users.noreply.github.com"
           git add --all
           git commmit -a "Add $BACKPUBLISH_VERSION"
+      - name: Publish new version
+        run: |
           sbt clean tlRelease
           git push
