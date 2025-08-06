@@ -99,3 +99,4 @@ val betterToString =
     .aggregate(plugin, tests)
     .enablePlugins(NoPublishPlugin)
     .enablePlugins(ReadmePlugin)
+    .enablePlugins(AddVersionPlugin)

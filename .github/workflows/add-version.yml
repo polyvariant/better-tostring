@@ -69,7 +69,7 @@ jobs:
       - name: Commit new version support
         run: |
           gpg --list-keys
-          echo "${{inputs.scala_version}}" >> scala-versions
+          sbt "addVersion ${{inputs.scala_version}}"
           sbt "generateAll;++${{inputs.scala_version}} test"
           git add --all
           git commit -m "Add ${{inputs.scala_version}} support"
