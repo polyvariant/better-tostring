@@ -70,7 +70,6 @@ jobs:
         run: |
           gpg --list-keys
           echo "${{inputs.scala_version}}" >> scala-versions
-          echo "foo" >> .github/workflows/ci.yml
           sbt "generateAll;++${{inputs.scala_version}} test"
           git add --all
           git commit -m "Add ${{inputs.scala_version}} support"
