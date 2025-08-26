@@ -40,6 +40,7 @@ pull_request_rules:
   - status-success=Test (ubuntu-22.04, 3.7.2-RC2, temurin@8)
   - status-success=Test (ubuntu-22.04, 3.7.2, temurin@8)
   - status-success=Test (ubuntu-22.04, 3.7.3-RC1, temurin@8)
+  - status-success=Test (ubuntu-22.04, 3.7.3-RC2, temurin@8)
   actions:
     merge: {}
 - name: Label plugin PRs
