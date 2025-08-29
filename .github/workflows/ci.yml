@@ -47,6 +47,7 @@ jobs:
           - 3.3.4
           - 3.3.5
           - 3.3.6
+          - 3.3.7-RC1
           - 3.4.0
           - 3.4.1
           - 3.4.2
@@ -293,6 +294,16 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
+      - name: Download target directories (3.3.7-RC1)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.7-RC1
+
+      - name: Inflate target directories (3.3.7-RC1)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
       - name: Download target directories (3.4.0)
         uses: actions/download-artifact@v4
         with:
@@ -520,5 +531,5 @@ jobs:
       - name: Submit Dependencies
         uses: scalacenter/sbt-dependency-submission@v2
         with:
-          modules-ignore: root_2.12 root_2.12 root_2.12 root_2.13 root_2.13 root_2.13 root_2.13 root_2.13 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 tests_2.12 tests_2.12 tests_2.12 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3
+          modules-ignore: root_2.12 root_2.12 root_2.12 root_2.13 root_2.13 root_2.13 root_2.13 root_2.13 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 tests_2.12 tests_2.12 tests_2.12 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3
           configs-ignore: test scala-tool scala-doc-tool test-internal
