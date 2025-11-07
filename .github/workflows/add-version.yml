@@ -78,5 +78,5 @@ jobs:
           BACKPUBLISH_VERSION: ${{inputs.scala_version}}
           PROJECT_VERSION: ${{inputs.project_version}}
         run: |
-          git push
           sbt clean tlCiRelease
+          git push
