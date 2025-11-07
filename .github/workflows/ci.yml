@@ -68,6 +68,7 @@ jobs:
           - 3.7.3-RC1
           - 3.7.3-RC2
           - 3.7.3
+          - 3.7.4
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -507,6 +508,16 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
+      - name: Download target directories (3.7.4)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.7.4
+
+      - name: Inflate target directories (3.7.4)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
       - name: Import signing key
         if: env.PGP_SECRET != '' && env.PGP_PASSPHRASE == ''
         env:
@@ -564,5 +575,5 @@ jobs:
       - name: Submit Dependencies
         uses: scalacenter/sbt-dependency-submission@v2
         with:
-          modules-ignore: root_2.12 root_2.12 root_2.12 root_2.13 root_2.13 root_2.13 root_2.13 root_2.13 root_2.13 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 tests_2.12 tests_2.12 tests_2.12 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3
+          modules-ignore: root_2.12 root_2.12 root_2.12 root_2.13 root_2.13 root_2.13 root_2.13 root_2.13 root_2.13 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 root_3 tests_2.12 tests_2.12 tests_2.12 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_2.13 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3 tests_3
           configs-ignore: test scala-tool scala-doc-tool test-internal
