@@ -19,12 +19,9 @@ package org.polyvariant
 import dotty.tools.dotc.ast.tpd
 import dotty.tools.dotc.core.Contexts.Context
 import dotty.tools.dotc.core.Flags.Module
-import dotty.tools.dotc.core.Flags.Package
 import dotty.tools.dotc.core.Symbols
 import dotty.tools.dotc.plugins.PluginPhase
 import dotty.tools.dotc.plugins.StandardPlugin
-
-import scala.annotation.tailrec
 
 import tpd.*
 
