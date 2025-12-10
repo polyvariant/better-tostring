@@ -29,6 +29,10 @@ ThisBuild / githubWorkflowEnv ++= List(
 
 ThisBuild / githubWorkflowPublishTargetBranches := List(RefPredicate.StartsWith(Ref.Tag("v")))
 
+// Scala 3.8+ requires JDK 17, but we can't switch individual jobs' versions yet (https://github.com/typelevel/sbt-typelevel/issues/851)
+// so we just go all-in
+ThisBuild / tlJdkRelease := Some(17)
+
 ThisBuild / githubWorkflowGeneratedCI ~= {
   _.map {
     case job if job.id == "build" =>
@@ -62,10 +66,7 @@ val plugin = project
           s"scala3-compiler_3"
         else "scala-compiler"
       ) % scalaVersion.value
-    ),
-    // 3.3.x -> "scala-3.3.x"
-    Compile / unmanagedSourceDirectories +=
-      sourceDirectory.value / "main" / s"scala-${scalaVersion.value.split("\\.").take(2).mkString(".")}.x"
+    )
   )
   .enablePlugins(BackpublishPlugin)
 
