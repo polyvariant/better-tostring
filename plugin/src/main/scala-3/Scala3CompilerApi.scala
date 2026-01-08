@@ -100,7 +100,19 @@ object Scala3CompilerApi:
       // for some reason, this is true for case objects too
       clazz.clazz.flags.is(CaseClass)
 
+    def isEnum(clazz: Clazz): Boolean =
+      // the class is an enum if its direct supertypes include scala.reflect.Enum
+      clazz.clazz.parentTypes.map(_.typeSymbol).contains(Symbols.defn.EnumClass)
+
+    def isViableDefinition(clazz: Clazz): Boolean = {
+      val isCaseClassOrObject = clazz.clazz.flags.is(CaseClass)
+
+      isCaseClassOrObject || isEnum(clazz)
+    }
+
     def isObject(clazz: Clazz): Boolean =
       clazz.clazz.flags.is(Module)
+
+    def productPrefixParam: ParamName = "productPrefix".toTermName
 
 end Scala3CompilerApi

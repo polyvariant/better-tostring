@@ -20,15 +20,11 @@ class Scala3Tests extends FunSuite:
   test("an enum made of constants should have a normal toString") {
     assertEquals(
       ScalaVersion.Scala2.toString,
-      // https://github.com/polyvariant/better-tostring/issues/60
-      // should be "ScalaVersion.Scala2"
-      "Scala2"
+      "ScalaVersion.Scala2"
     )
     assertEquals(
       ScalaVersion.Scala3.toString,
-      // https://github.com/polyvariant/better-tostring/issues/60
-      // should be "ScalaVersion.Scala3"
-      "Scala3"
+      "ScalaVersion.Scala3"
     )
   }
 
@@ -39,9 +35,7 @@ class Scala3Tests extends FunSuite:
     )
     assertEquals(
       User.Unauthorized.toString,
-      // https://github.com/polyvariant/better-tostring/issues/60
-      // should be "User.Unauthorized"
-      "Unauthorized"
+      "User.Unauthorized"
     )
   }
 

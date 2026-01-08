@@ -108,11 +108,22 @@ object Scala2CompilerApi {
 
       def isCaseClass(clazz: Clazz): Boolean = clazz.merge.mods.isCase
 
+      // No enums in scala 2
+      def isEnum(clazz: Clazz): Boolean = false
+
+      def isViableDefinition(clazz: Clazz): Boolean = {
+        val isCaseClassOrObject = clazz.merge.mods.isCase
+
+        isCaseClassOrObject
+      }
+
       // Always return true for ModuleDef - apparently ModuleDef doesn't have the module flag...
       def isObject(clazz: Clazz): Boolean = clazz.fold(
         clazz = _.mods.hasModuleFlag,
         obj = _ => true
       )
+
+      def productPrefixParam: Nothing = sys.error("invalid state: this shouldn't be called in Scala 2")
 
     }
 
