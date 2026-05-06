@@ -32,7 +32,7 @@ jobs:
           fetch_candidates() {
             local repo="$1"
             gh api "repos/${repo}/releases?per_page=30" \
-              --jq '.[] | select(.draft == false) | select(.created_at >= "2026-01-01") | {tag: .tag_name, created_at: .created_at}' \
+              --jq '.[] | select(.draft == false) | select(.created_at >= "2026-04-02") | {tag: .tag_name, created_at: .created_at}' \
               -H "Accept: application/vnd.github+json"
           }
 
@@ -57,7 +57,7 @@ jobs:
           done < "$candidates_file"
 
           new_count="$(wc -l < "$new_candidates_file" | tr -d ' ')"
-          echo "Found $new_count new release(s) (created in 2026 or later, not in scala-versions)"
+          echo "Found $new_count new release(s) (created on/after 2026-04-02, not in scala-versions)"
 
           if [ "$new_count" -eq 0 ]; then
             echo "Nothing to do."
