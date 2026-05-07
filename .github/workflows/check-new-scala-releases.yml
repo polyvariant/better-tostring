@@ -17,6 +17,7 @@ jobs:
     permissions:
       actions: write
       contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v4
 
@@ -104,4 +105,10 @@ jobs:
           else
             echo "Dispatching add-version.yml for $picked"
             gh workflow run add-version.yml --ref "${GITHUB_REF_NAME}" -f "scala_version=$picked"
+
+            run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            issue_url="$(gh issue create \
+              --title "Release triggered for Scala $picked" \
+              --body "Triggered by [this run]($run_url).")"
+            gh issue close "$issue_url"
           fi
