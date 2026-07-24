@@ -71,9 +71,12 @@ jobs:
 
           jq -r '"  - " + .version + " (created " + .created_at + ")"' "$sorted_file"
 
-          # Fetch published versions from Maven Central — once per artifact, not per candidate
+          # Fetch published versions from Maven Central — once per artifact, not per candidate.
+          # For Scala 3 we also require scala3-directives-parser_3: sbt needs it to build a 3.x
+          # compiler, and it can lag behind the compiler on Maven Central (e.g. 3.9.0-RC2 shipped
+          # a compiler but no directives-parser, which made the build unresolvable).
           maven_versions_file="$(mktemp)"
-          for artifact in scala3-compiler_3 scala-compiler; do
+          for artifact in scala3-compiler_3 scala3-directives-parser_3 scala-compiler; do
             curl -sf "https://repo1.maven.org/maven2/org/scala-lang/${artifact}/maven-metadata.xml" \
               | grep -oE '<version>[^<]+</version>' \
               | sed -E 's:</?version>::g' \
@@ -81,17 +84,33 @@ jobs:
               >> "$maven_versions_file"
           done
 
-          # Find the oldest candidate that's already published
+          # Find the oldest candidate that's already fully published
           picked=""
           while IFS= read -r line; do
             version="$(jq -r '.version' <<<"$line")"
             artifact="$(jq -r '.artifact' <<<"$line")"
-            if grep -qxF "$artifact $version" "$maven_versions_file"; then
-              echo "$version: available on Maven Central ($artifact)"
+
+            # Every candidate must have its primary compiler artifact.
+            required_artifacts="$artifact"
+            # Scala 3 additionally needs the directives-parser at the same version.
+            if [ "$artifact" = "scala3-compiler_3" ]; then
+              required_artifacts="$required_artifacts scala3-directives-parser_3"
+            fi
+
+            missing=""
+            for req in $required_artifacts; do
+              if ! grep -qxF "$req $version" "$maven_versions_file"; then
+                missing="$req"
+                break
+              fi
+            done
+
+            if [ -z "$missing" ]; then
+              echo "$version: available on Maven Central ($required_artifacts)"
               picked="$version"
               break
             else
-              echo "$version: not on Maven Central yet ($artifact) — skipping"
+              echo "$version: not fully on Maven Central yet (missing $missing) — skipping"
             fi
           done < "$sorted_file"
 
@@ -103,12 +122,14 @@ jobs:
           if [ "${DRY_RUN:-false}" = "true" ]; then
             echo "[dry-run] Would dispatch add-version.yml for $picked"
           else
-            echo "Dispatching add-version.yml for $picked"
-            gh workflow run add-version.yml --ref "${GITHUB_REF_NAME}" -f "scala_version=$picked"
-
             run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             issue_url="$(gh issue create \
               --title "Release triggered for Scala $picked" \
-              --body "Triggered by [this run]($run_url).")"
-            gh issue close "$issue_url"
+              --body "Triggered by [this run]($run_url). This issue will be closed once $picked is published, or commented on if publishing fails.")"
+            issue_number="${issue_url##*/}"
+
+            echo "Dispatching add-version.yml for $picked (tracking issue #$issue_number)"
+            gh workflow run add-version.yml --ref "${GITHUB_REF_NAME}" \
+              -f "scala_version=$picked" \
+              -f "issue_number=$issue_number"
           fi

@@ -12,8 +12,16 @@ on:
         required: true
         type: string
         default: "0.3.17"
+      issue_number:
+        description: "Tracking issue to close on success / comment on failure (optional)"
+        required: false
+        type: string
+        default: ""
 jobs:
   add-version:
+    permissions:
+      contents: read
+      issues: write
     env:
       SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
       SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
@@ -80,3 +88,21 @@ jobs:
         run: |
           sbt clean tlCiRelease
           git push
+
+      - name: Close tracking issue on success
+        if: success() && inputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue close "${{ inputs.issue_number }}" \
+            --comment "Published Scala ${{ inputs.scala_version }} support. See [the run]($RUN_URL)."
+
+      - name: Comment on tracking issue on failure
+        if: failure() && inputs.issue_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue comment "${{ inputs.issue_number }}" \
+            --body "Publishing Scala ${{ inputs.scala_version }} support failed. See [the run]($RUN_URL). Leaving this issue open."
