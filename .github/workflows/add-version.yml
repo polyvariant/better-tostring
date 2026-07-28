@@ -12,11 +12,6 @@ on:
         required: true
         type: string
         default: "0.3.17"
-      issue_number:
-        description: "Tracking issue to close on success / comment on failure (optional)"
-        required: false
-        type: string
-        default: ""
 jobs:
   add-version:
     permissions:
@@ -29,6 +24,17 @@ jobs:
       PGP_SECRET: ${{ secrets.PGP_SECRET }}
     runs-on: ubuntu-latest
     steps:
+      - name: Create tracking issue
+        id: tracking-issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          issue_url="$(gh issue create \
+            --title "Release triggered for Scala ${{ inputs.scala_version }}" \
+            --body "Triggered by [this run]($RUN_URL). This issue will be closed once ${{ inputs.scala_version }} is published, or commented on if publishing fails.")"
+          echo "number=${issue_url##*/}" >> "$GITHUB_OUTPUT"
+
       - name: Get app token
         uses: actions/create-github-app-token@v1
         id: app-token
@@ -90,19 +96,19 @@ jobs:
           git push
 
       - name: Close tracking issue on success
-        if: success() && inputs.issue_number != ''
+        if: success()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          gh issue close "${{ inputs.issue_number }}" \
+          gh issue close "${{ steps.tracking-issue.outputs.number }}" \
             --comment "Published Scala ${{ inputs.scala_version }} support. See [the run]($RUN_URL)."
 
       - name: Comment on tracking issue on failure
-        if: failure() && inputs.issue_number != ''
+        if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          gh issue comment "${{ inputs.issue_number }}" \
+          gh issue comment "${{ steps.tracking-issue.outputs.number }}" \
             --body "Publishing Scala ${{ inputs.scala_version }} support failed. See [the run]($RUN_URL). Leaving this issue open."

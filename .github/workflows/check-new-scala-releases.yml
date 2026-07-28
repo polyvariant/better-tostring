@@ -30,11 +30,26 @@ jobs:
 
           known_versions="$(grep -v '^[[:space:]]*$' scala-versions | sort -u)"
 
+          # Use the publish date of the newest version we already support as a cutoff, so
+          # RCs that were removed from scala-versions after their final release shipped
+          # (e.g. 3.3.8-RC2, dropped once 3.3.8 was out) don't get rediscovered as "new".
+          latest_known_version="$(tail -1 <<<"$known_versions")"
+          if [[ "$latest_known_version" == 3.* ]]; then
+            latest_known_repo="scala/scala3"
+            latest_known_tag="$latest_known_version"
+          else
+            latest_known_repo="scala/scala"
+            latest_known_tag="v${latest_known_version}"
+          fi
+
+          cutoff="$(gh api "repos/${latest_known_repo}/releases/tags/${latest_known_tag}" --jq '.created_at')"
+          echo "Using cutoff $cutoff (publish date of latest known version $latest_known_version)"
+          echo "**Cutoff:** \`$cutoff\` (publish date of latest known version \`$latest_known_version\`)" >> "$GITHUB_STEP_SUMMARY"
+
           fetch_candidates() {
             local repo="$1"
-            gh api "repos/${repo}/releases?per_page=30" \
-              --jq '.[] | select(.draft == false) | select(.created_at >= "2026-04-02") | {tag: .tag_name, created_at: .created_at}' \
-              -H "Accept: application/vnd.github+json"
+            gh api "repos/${repo}/releases?per_page=30" -H "Accept: application/vnd.github+json" \
+              | jq -c --arg cutoff "$cutoff" '.[] | select(.draft == false) | select(.created_at >= $cutoff) | {tag: .tag_name, created_at: .created_at}'
           }
 
           # Collect candidates as JSON lines: {tag, created_at, version, maven_path}
@@ -58,7 +73,7 @@ jobs:
           done < "$candidates_file"
 
           new_count="$(wc -l < "$new_candidates_file" | tr -d ' ')"
-          echo "Found $new_count new release(s) (created on/after 2026-04-02, not in scala-versions)"
+          echo "Found $new_count new release(s) (created on/after $cutoff, not in scala-versions)"
 
           if [ "$new_count" -eq 0 ]; then
             echo "Nothing to do."
@@ -119,17 +134,20 @@ jobs:
             exit 0
           fi
 
+          # Guard against re-dispatching a version that's already being published (or was just
+          # published) by another run: a failed publish leaves its tracking issue open without
+          # updating scala-versions, so the same version can otherwise be picked again on every
+          # run until the issue is closed, spawning a fresh duplicate issue each time.
+          existing_issue="$(gh issue list --state open --search "\"Release triggered for Scala $picked\" in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$existing_issue" ]; then
+            echo "An open tracking issue (#$existing_issue) already exists for $picked. Skipping dispatch."
+            exit 0
+          fi
+
           if [ "${DRY_RUN:-false}" = "true" ]; then
             echo "[dry-run] Would dispatch add-version.yml for $picked"
           else
-            run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            issue_url="$(gh issue create \
-              --title "Release triggered for Scala $picked" \
-              --body "Triggered by [this run]($run_url). This issue will be closed once $picked is published, or commented on if publishing fails.")"
-            issue_number="${issue_url##*/}"
-
-            echo "Dispatching add-version.yml for $picked (tracking issue #$issue_number)"
+            echo "Dispatching add-version.yml for $picked"
             gh workflow run add-version.yml --ref "${GITHUB_REF_NAME}" \
-              -f "scala_version=$picked" \
-              -f "issue_number=$issue_number"
+              -f "scala_version=$picked"
           fi
