@@ -88,7 +88,7 @@ jobs:
 
           # Fetch published versions from Maven Central — once per artifact, not per candidate.
           # For Scala 3 we also require scala3-directives-parser_3: sbt needs it to build a 3.x
-          # compiler, and it can lag behind the compiler on Maven Central (e.g. 3.9.0-RC2 shipped
+          # compiler, and it can lag behind the compiler on Maven Central (e.g. 3.9.0-RC3 shipped
           # a compiler but no directives-parser, which made the build unresolvable).
           maven_versions_file="$(mktemp)"
           for artifact in scala3-compiler_3 scala3-directives-parser_3 scala-compiler; do
