@@ -144,6 +144,23 @@ jobs:
             exit 0
           fi
 
+          # The issue check above is the primary guard, but it only works if the tracking
+          # issue was actually created. If add-version fails before that point, no issue
+          # exists and $picked would be re-dispatched on every run. Fall back to asking
+          # whether add-version already ran for this exact version and failed.
+          previous_failure="$(gh run list --workflow=add-version.yml --status=failure --limit 50 \
+            --json displayTitle,url \
+            --jq "[.[] | select(.displayTitle | contains(\"Version $picked \"))] | .[0].url // empty")"
+          if [ -n "$previous_failure" ]; then
+            echo "add-version already failed for $picked ($previous_failure) without leaving an open issue."
+            echo "Not re-dispatching; investigate that run first."
+            {
+              echo "**Skipped \`$picked\`:** a previous [add-version run]($previous_failure) failed and left no open tracking issue."
+              echo "Re-run add-version.yml manually once the cause is fixed."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
           if [ "${DRY_RUN:-false}" = "true" ]; then
             echo "[dry-run] Would dispatch add-version.yml for $picked"
           else
