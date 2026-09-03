@@ -97,9 +97,29 @@ jobs:
             exit 0
           fi
 
+          # Drop RCs whose final release is also a candidate: publishing 3.9.0-RC5 and
+          # 3.9.0-RC6 right before 3.9.0 is wasted work (one scheduled run each, and the
+          # RCs get dropped from scala-versions again once the final ships — see d4200da).
+          # An RC with no final in the set is still picked up, so pre-release support works.
+          pruned_file="$(mktemp)"
+          jq -s -c '
+            (map(select(.version | test("-RC[0-9]+$") | not) | .version)) as $finals
+            | map(select(
+                .version as $v
+                | ($finals | any(. as $f | $v | startswith($f + "-RC")))
+                | not
+              ))
+            | .[]
+          ' "$new_candidates_file" > "$pruned_file"
+
+          pruned_count="$(wc -l < "$pruned_file" | tr -d ' ')"
+          if [ "$pruned_count" -ne "$new_count" ]; then
+            echo "Skipping $((new_count - pruned_count)) RC(s) superseded by a final release in this batch."
+          fi
+
           # Sort oldest first by created_at
           sorted_file="$(mktemp)"
-          jq -s 'sort_by(.created_at) | .[]' -c "$new_candidates_file" > "$sorted_file"
+          jq -s 'sort_by(.created_at) | .[]' -c "$pruned_file" > "$sorted_file"
 
           jq -r '"  - " + .version + " (created " + .created_at + ")"' "$sorted_file"
 
@@ -164,18 +184,34 @@ jobs:
           # The issue check above is the primary guard, but it only works if the tracking
           # issue was actually created. If add-version fails before that point, no issue
           # exists and $picked would be re-dispatched on every run. Fall back to asking
-          # whether add-version already ran for this exact version and failed.
-          previous_failure="$(gh run list --workflow=add-version.yml --status=failure --limit 50 \
-            --json displayTitle,url \
-            --jq "[.[] | select(.displayTitle | contains(\"Version $picked \"))] | .[0].url // empty")"
-          if [ -n "$previous_failure" ]; then
-            echo "add-version already failed for $picked ($previous_failure) without leaving an open issue."
-            echo "Not re-dispatching; investigate that run first."
-            {
-              echo "**Skipped \`$picked\`:** a previous [add-version run]($previous_failure) failed and left no open tracking issue."
-              echo "Re-run add-version.yml manually once the cause is fixed."
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
+          # what the *latest* add-version run for this exact version did.
+          #
+          # Only the latest run counts, not "any run ever failed": a stale failure would
+          # otherwise block the version forever, even after the cause was fixed. Re-running
+          # add-version successfully (or manually) clears the block on its own.
+          latest_run="$(gh run list --workflow=add-version.yml --limit 100 \
+            --json displayTitle,url,conclusion,status \
+            --jq "[.[] | select(.displayTitle | startswith(\"Add Scala Version $picked (\"))] | .[0] // empty")"
+
+          if [ -n "$latest_run" ]; then
+            latest_status="$(jq -r '.status' <<<"$latest_run")"
+            latest_conclusion="$(jq -r '.conclusion' <<<"$latest_run")"
+            latest_url="$(jq -r '.url' <<<"$latest_run")"
+
+            if [ "$latest_status" != "completed" ]; then
+              echo "add-version is already $latest_status for $picked ($latest_url). Skipping dispatch."
+              exit 0
+            fi
+
+            if [ "$latest_conclusion" != "success" ]; then
+              echo "The most recent add-version run for $picked $latest_conclusion ($latest_url)."
+              echo "Not re-dispatching; investigate or re-run that run first."
+              {
+                echo "**Skipped \`$picked\`:** the most recent [add-version run]($latest_url) $latest_conclusion and left no open tracking issue."
+                echo "Re-run add-version.yml once the cause is fixed — a successful run clears this guard."
+              } >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
           fi
 
           if [ "${DRY_RUN:-false}" = "true" ]; then
