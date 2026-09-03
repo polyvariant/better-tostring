@@ -30,38 +30,55 @@ jobs:
 
           known_versions="$(grep -v '^[[:space:]]*$' scala-versions | sort -u)"
 
-          # Use the publish date of the newest version we already support as a cutoff, so
-          # RCs that were removed from scala-versions after their final release shipped
-          # (e.g. 3.3.8-RC2, dropped once 3.3.8 was out) don't get rediscovered as "new".
-          latest_known_version="$(tail -1 <<<"$known_versions")"
-          if [[ "$latest_known_version" == 3.* ]]; then
-            latest_known_repo="scala/scala3"
-            latest_known_tag="$latest_known_version"
-          else
-            latest_known_repo="scala/scala"
-            latest_known_tag="v${latest_known_version}"
+          # Fetch both release lists once; the cutoff and the candidate list are both
+          # derived from them.
+          releases_file="$(mktemp)"
+          gh api "repos/scala/scala3/releases?per_page=30" -H "Accept: application/vnd.github+json" \
+            | jq -c '.[] | select(.draft == false) | {version: .tag_name, created_at, artifact: "scala3-compiler_3"}' \
+            > "$releases_file"
+          gh api "repos/scala/scala/releases?per_page=30" -H "Accept: application/vnd.github+json" \
+            | jq -c '.[] | select(.draft == false) | {version: (.tag_name | sub("^v"; "")), created_at, artifact: "scala-compiler"}' \
+            >> "$releases_file"
+
+          # Use the publish date of the most recently released version we already support as
+          # a cutoff, so RCs that were removed from scala-versions after their final release
+          # shipped (e.g. 3.3.8-RC2, dropped once 3.3.8 was out) aren't rediscovered as "new".
+          #
+          # Take the max publish date over every known version rather than picking a "latest"
+          # version by string order: scala-versions is sorted lexically, where 3.10.0-RC1 sorts
+          # before 3.3.5 and 3.9.0-RC4 sorts after 3.9.0. Neither lexical nor `sort -V` order
+          # tracks release date (sort -V also ranks an RC above its own final), so any
+          # version-ordering heuristic picks the wrong entry. Publish dates are the real
+          # question being asked, so ask them directly.
+          known_versions_json="$(jq -R . <<<"$known_versions" | jq -s -c .)"
+          cutoff_entry="$(jq -s -c --argjson known "$known_versions_json" '
+            map(select(.version as $v | $known | index($v)))
+            | sort_by(.created_at)
+            | last // empty
+          ' "$releases_file")"
+
+          if [ -z "$cutoff_entry" ]; then
+            echo "::error::No known version from scala-versions found in the last 30 releases of either repo."
+            echo "The cutoff can't be computed; widen the per_page window or check scala-versions."
+            exit 1
           fi
 
-          cutoff="$(gh api "repos/${latest_known_repo}/releases/tags/${latest_known_tag}" --jq '.created_at')"
-          echo "Using cutoff $cutoff (publish date of latest known version $latest_known_version)"
-          echo "**Cutoff:** \`$cutoff\` (publish date of latest known version \`$latest_known_version\`)" >> "$GITHUB_STEP_SUMMARY"
+          cutoff="$(jq -r '.created_at' <<<"$cutoff_entry")"
+          cutoff_version="$(jq -r '.version' <<<"$cutoff_entry")"
+          echo "Using cutoff $cutoff (publish date of most recent known version $cutoff_version)"
+          echo "**Cutoff:** \`$cutoff\` (publish date of most recent known version \`$cutoff_version\`)" >> "$GITHUB_STEP_SUMMARY"
 
           fetch_candidates() {
-            local repo="$1"
-            gh api "repos/${repo}/releases?per_page=30" -H "Accept: application/vnd.github+json" \
-              | jq -c --arg cutoff "$cutoff" '.[] | select(.draft == false) | select(.created_at >= $cutoff) | {tag: .tag_name, created_at: .created_at}'
+            local artifact="$1"
+            jq -c --arg cutoff "$cutoff" --arg artifact "$artifact" \
+              'select(.artifact == $artifact) | select(.created_at >= $cutoff)' "$releases_file"
           }
 
-          # Collect candidates as JSON lines: {tag, created_at, version, maven_path}
+          # Collect candidates as JSON lines: {version, created_at, artifact}
           candidates_file="$(mktemp)"
 
-          fetch_candidates "scala/scala3" \
-            | jq -c '. + {version: .tag, artifact: "scala3-compiler_3"}' \
-            >> "$candidates_file"
-
-          fetch_candidates "scala/scala" \
-            | jq -c '. + {version: (.tag | sub("^v"; "")), artifact: "scala-compiler"}' \
-            >> "$candidates_file"
+          fetch_candidates "scala3-compiler_3" >> "$candidates_file"
+          fetch_candidates "scala-compiler" >> "$candidates_file"
 
           # Filter out already-known versions, oldest first so we always pick the oldest unreleased one
           new_candidates_file="$(mktemp)"
