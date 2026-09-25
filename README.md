@@ -39,11 +39,11 @@ In scala-cli:
 (note: versions before `0.3.8` were published under the `com.kubukoz` organization instead of `org.polyvariant`)
 
 <!-- SCALA VERSIONS START -->
-The plugin is currently published for the following 23 Scala versions:
+The plugin is currently published for the following 24 Scala versions:
 
 - 2.12.19, 2.12.20, 2.12.21
 - 2.13.16, 2.13.17, 2.13.18
-- 3.10.0-RC1, 3.10.0-RC2
+- 3.10.0-RC1, 3.10.0-RC2, 3.10.0-RC3
 - 3.3.5, 3.3.6, 3.3.7, 3.3.8
 - 3.4.3
 - 3.5.2
