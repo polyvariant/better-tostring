@@ -23,7 +23,7 @@ object ReadmePlugin extends AutoPlugin {
       val versionsString = versionsGrouped
         .keys
         .toSeq
-        .sorted
+        .sortBy(AddVersionPlugin.ParsedVersion.parse)
         .map { prefix =>
           "- " + versionsGrouped(prefix).mkString(", ")
         }
