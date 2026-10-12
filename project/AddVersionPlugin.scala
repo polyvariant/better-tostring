@@ -19,15 +19,28 @@ object AddVersionPlugin extends AutoPlugin {
 
   object ParsedVersion {
 
+    // segments are compared numerically where possible, so that 3.10.0 sorts after 3.9.0 (and RC10 after RC9)
+    private def segments(s: String): List[Either[BigInt, String]] =
+      "[0-9]+|[^0-9.]+".r.findAllIn(s).map(seg => if (seg.forall(_.isDigit)) Left(BigInt(seg)) else Right(seg)).toList
+
+    private implicit val segmentOrdering: Ordering[Either[BigInt, String]] = Ordering.by {
+      case Left(n)  => (0, n, "")
+      case Right(s) => (1, BigInt(0), s)
+    }
+
     // if mainPart is the same, RCs go first
-    implicit val ordering: Ordering[ParsedVersion] = Ordering.by { v =>
-      (
-        v.mainPart,
-        v.rcPart match {
-          case Some(rc) => s"0$rc" // prepend 0 to RCs to sort them before non-RCs
-          case None     => "1" // non-RCs come after RCs
-        }
-      )
+    implicit val ordering: Ordering[ParsedVersion] = {
+      import scala.math.Ordering.Implicits._
+
+      Ordering.by { (v: ParsedVersion) =>
+        (
+          segments(v.mainPart),
+          v.rcPart match {
+            case Some(rc) => (0, segments(rc)) // RCs come before non-RCs
+            case None     => (1, Nil: List[Either[BigInt, String]])
+          }
+        )
+      }
     }
 
     def parse(version: String): ParsedVersion = {

@@ -39,9 +39,6 @@ jobs:
           - 2.13.16
           - 2.13.17
           - 2.13.18
-          - 3.10.0-RC1
-          - 3.10.0-RC2
-          - 3.10.0-RC3
           - 3.3.5
           - 3.3.6
           - 3.3.7
@@ -57,6 +54,9 @@ jobs:
           - 3.9.0-RC3
           - 3.9.0-RC4
           - 3.9.0
+          - 3.10.0-RC1
+          - 3.10.0-RC2
+          - 3.10.0-RC3
         java: [temurin@17]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -202,36 +202,6 @@ jobs:
           name: target-${{ matrix.os }}-${{ matrix.java }}-2.13.18
 
       - name: Inflate target directories (2.13.18)
-        run: |
-          tar xf targets.tar
-          rm targets.tar
-
-      - name: Download target directories (3.10.0-RC1)
-        uses: actions/download-artifact@v6
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.10.0-RC1
-
-      - name: Inflate target directories (3.10.0-RC1)
-        run: |
-          tar xf targets.tar
-          rm targets.tar
-
-      - name: Download target directories (3.10.0-RC2)
-        uses: actions/download-artifact@v6
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.10.0-RC2
-
-      - name: Inflate target directories (3.10.0-RC2)
-        run: |
-          tar xf targets.tar
-          rm targets.tar
-
-      - name: Download target directories (3.10.0-RC3)
-        uses: actions/download-artifact@v6
-        with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.10.0-RC3
-
-      - name: Inflate target directories (3.10.0-RC3)
         run: |
           tar xf targets.tar
           rm targets.tar
@@ -382,6 +352,36 @@ jobs:
           name: target-${{ matrix.os }}-${{ matrix.java }}-3.9.0
 
       - name: Inflate target directories (3.9.0)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.10.0-RC1)
+        uses: actions/download-artifact@v6
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.10.0-RC1
+
+      - name: Inflate target directories (3.10.0-RC1)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.10.0-RC2)
+        uses: actions/download-artifact@v6
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.10.0-RC2
+
+      - name: Inflate target directories (3.10.0-RC2)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.10.0-RC3)
+        uses: actions/download-artifact@v6
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.10.0-RC3
+
+      - name: Inflate target directories (3.10.0-RC3)
         run: |
           tar xf targets.tar
           rm targets.tar
